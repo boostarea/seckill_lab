@@ -11,18 +11,17 @@ import com.rong.seckill.mq.MqProducer;
 import com.rong.seckill.response.CommonReturnType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -33,8 +32,8 @@ import java.util.concurrent.Future;
  * @Author chenrong
  * @Date 2019-08-11 15:27
  **/
-@Controller("order")
-@RequestMapping("/order")
+@RestController
+@RequestMapping("order")
 @CrossOrigin(origins = {"*"},allowCredentials = "true")
 public class OrderController extends BaseController {
     @Autowired
@@ -62,52 +61,23 @@ public class OrderController extends BaseController {
     @PostConstruct
     public void init(){
         executorService = Executors.newFixedThreadPool(20);
-
         orderCreateRateLimiter = RateLimiter.create(300);
 
     }
 
-    //生成验证码
     @RequestMapping(value = "/generateverifycode",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public void generateverifycode(HttpServletResponse response) throws BusinessException, IOException {
-        String token = httpServletRequest.getParameterMap().get("token")[0];
-        if(StringUtils.isEmpty(token)){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能生成验证码");
-        }
-        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
-        if(userModel == null){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能生成验证码");
-        }
-
-        // Map<String,Object> map = CodeUtil.generateCodeAndPic();
-        //
-        // redisTemplate.opsForValue().set("verify_code_"+userModel.getId(),map.get("code"));
-        // redisTemplate.expire("verify_code_"+userModel.getId(),10,TimeUnit.MINUTES);
-        //
-        // ImageIO.write((RenderedImage) map.get("codePic"), "jpeg", response.getOutputStream());
-
-
+    public void generateverifycode(HttpServletResponse response) throws BusinessException {
+        verifyToken();
     }
 
 
     //生成秒杀令牌
-    @RequestMapping(value = "/generatetoken",method = {RequestMethod.POST},consumes={CONTENT_TYPE_FORMED})
-    @ResponseBody
+    @PostMapping(value = "generatetoken", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType generatetoken(@RequestParam(name="itemId")Integer itemId,
                                           @RequestParam(name="promoId")Integer promoId,
                                           @RequestParam(name="verifyCode")String verifyCode) throws BusinessException {
-        //根据token获取用户信息
-        String token = httpServletRequest.getParameterMap().get("token")[0];
-        if(StringUtils.isEmpty(token)){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
-        }
-        //获取用户的登陆信息
-        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
-        if(userModel == null){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
-        }
 
+        UserModel userModel = verifyToken();
         //通过verifycode验证验证码的有效性
         String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_"+userModel.getId());
         if(StringUtils.isEmpty(redisVerifyCode)){
@@ -126,9 +96,9 @@ public class OrderController extends BaseController {
         //返回对应的结果
         return CommonReturnType.create(promoToken);
     }
-        //封装下单请求
-    @RequestMapping(value = "/createorder",method = {RequestMethod.POST},consumes={CONTENT_TYPE_FORMED})
-    @ResponseBody
+
+    //下单
+    @PostMapping(value = "createorder", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType createOrder(@RequestParam(name="itemId")Integer itemId,
                                         @RequestParam(name="amount")Integer amount,
                                         @RequestParam(name="promoId",required = false)Integer promoId,
@@ -138,15 +108,7 @@ public class OrderController extends BaseController {
             throw new BusinessException(EmBusinessError.RATELIMIT);
         }
 
-        String token = httpServletRequest.getParameterMap().get("token")[0];
-        if(StringUtils.isEmpty(token)){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
-        }
-        //获取用户的登陆信息
-        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
-        if(userModel == null){
-            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
-        }
+        UserModel userModel = this.verifyToken();
         //校验秒杀令牌是否正确
         if(promoId != null){
             String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_"+promoId+"_userid_"+userModel.getId()+"_itemid_"+itemId);
@@ -158,32 +120,39 @@ public class OrderController extends BaseController {
             }
         }
 
+
         //同步调用线程池的submit方法
         //拥塞窗口为20的等待队列，用来队列化泄洪
-        Future<Object> future = executorService.submit(new Callable<Object>() {
+        Future<Object> future = executorService.submit(() -> {
+            //加入库存流水init状态
+            String stockLogId = itemService.initStockLog(itemId,amount);
 
-            @Override
-            public Object call() throws Exception {
-                //加入库存流水init状态
-                String stockLogId = itemService.initStockLog(itemId,amount);
-
-
-                //再去完成对应的下单事务型消息机制
-                if(!mqProducer.transactionAsyncReduceStock(userModel.getId(),itemId,promoId,amount,stockLogId)){
-                    throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"下单失败");
-                }
-                return null;
+            //再去完成对应的下单事务型消息机制
+            if(!mqProducer.transactionAsyncReduceStock(userModel.getId(),itemId,promoId,amount,stockLogId)){
+                throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"下单失败");
             }
+            return null;
         });
 
         try {
             future.get();
-        } catch (InterruptedException e) {
-            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
         }
-
         return CommonReturnType.create(null);
+    }
+
+    private UserModel verifyToken() throws BusinessException {
+        //根据token获取用户信息
+        String token = httpServletRequest.getParameterMap().get("token")[0];
+        if(StringUtils.isEmpty(token)){
+            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
+        }
+        //获取用户的登陆信息
+        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
+        if(userModel == null){
+            throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
+        }
+        return userModel;
     }
 }

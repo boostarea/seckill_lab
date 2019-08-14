@@ -12,10 +12,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import sun.misc.BASE64Encoder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,8 +33,8 @@ import java.util.concurrent.TimeUnit;
  * @Author chenrong
  * @Date 2019-08-11 15:27
  **/
-@Controller("user")
-@RequestMapping("/user")
+@RestController
+@RequestMapping("user")
 @CrossOrigin(allowCredentials="true", allowedHeaders = "*")
 public class UserController  extends BaseController{
 
@@ -46,12 +48,8 @@ public class UserController  extends BaseController{
     private RedisTemplate redisTemplate;
 
 
-
-
-
     //用户注册接口
-    @RequestMapping(value = "/register",method = {RequestMethod.POST},consumes={CONTENT_TYPE_FORMED})
-    @ResponseBody
+    @PostMapping(value = "register", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType register(@RequestParam(name="telphone")String telphone,
                                      @RequestParam(name="otpCode")String otpCode,
                                      @RequestParam(name="name")String name,
@@ -86,8 +84,7 @@ public class UserController  extends BaseController{
 
 
     //用户获取otp短信接口
-    @RequestMapping(value = "/getotp",method = {RequestMethod.POST},consumes={CONTENT_TYPE_FORMED})
-    @ResponseBody
+    @PostMapping(value = "getotp", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType getOtp(@RequestParam(name="telphone")String telphone){
         //需要按照一定的规则生成OTP验证码
         Random random = new Random();
@@ -109,8 +106,7 @@ public class UserController  extends BaseController{
     }
 
 
-    @RequestMapping("/get")
-    @ResponseBody
+    @RequestMapping("get")
     public CommonReturnType getUser(@RequestParam(name="id") Integer id) throws BusinessException {
         //调用service服务获取对应id的用户对象并返回给前端
         UserModel userModel = userService.getUserById(id);
@@ -139,8 +135,7 @@ public class UserController  extends BaseController{
 
 
     //用户登陆接口
-    @RequestMapping(value = "/login",method = {RequestMethod.POST},consumes={CONTENT_TYPE_FORMED})
-    @ResponseBody
+    @PostMapping(value = "login", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType login(@RequestParam(name="telphone")String telphone,
                                   @RequestParam(name="password")String password) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
 

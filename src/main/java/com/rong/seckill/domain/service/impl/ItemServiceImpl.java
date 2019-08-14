@@ -2,6 +2,7 @@ package com.rong.seckill.domain.service.impl;
 
 import com.rong.seckill.domain.model.ItemModel;
 import com.rong.seckill.domain.model.PromoModel;
+import com.rong.seckill.domain.service.CacheService;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.entity.Item;
@@ -14,6 +15,7 @@ import com.rong.seckill.repository.ItemRepository;
 import com.rong.seckill.repository.ItemStockRepository;
 import com.rong.seckill.repository.PromoRepository;
 import com.rong.seckill.repository.StockLogRepository;
+import com.rong.seckill.util.convertor.ItemConvertor;
 import com.rong.seckill.util.validator.ValidationResult;
 import com.rong.seckill.util.validator.ValidatorImpl;
 import org.springframework.beans.BeanUtils;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -59,24 +62,8 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private PromoService promoService;
 
-    private Item convertItemDOFromItemModel(ItemModel itemModel){
-        if(itemModel == null){
-            return null;
-        }
-        Item item = new Item();
-        BeanUtils.copyProperties(itemModel,item);
-        item.setPrice(itemModel.getPrice().doubleValue());
-        return item;
-    }
-    private ItemStock convertItemStockDOFromItemModel(ItemModel itemModel){
-        if(itemModel == null){
-            return null;
-        }
-        ItemStock itemStock = new ItemStock();
-        itemStock.setItemId(itemModel.getId());
-        itemStock.setStock(itemModel.getStock());
-        return itemStock;
-    }
+    @Autowired
+    private CacheService cacheService;
 
     @Override
     @Transactional
@@ -88,27 +75,48 @@ public class ItemServiceImpl implements ItemService {
         }
 
         //转化itemmodel->dataobject
-        Item item = this.convertItemDOFromItemModel(itemModel);
+        Item item = ItemConvertor.convertItemDOFromItemModel(itemModel);
         //写入数据库
         itemRepository.save(item);
         itemModel.setId(item.getId());
 
-        ItemStock itemStock = this.convertItemStockDOFromItemModel(itemModel);
-
+        ItemStock itemStock = ItemConvertor.convertItemStockDOFromItemModel(itemModel);
         itemStockRepository.save(itemStock);
-        //返回创建完成的对象
         return this.getItemById(itemModel.getId());
     }
 
     @Override
     public List<ItemModel> listItem() {
-        List<Item> itemDOList = itemRepository.listItem();
-        List<ItemModel> itemModelList =  itemDOList.stream().map(itemDO -> {
-            ItemStock itemStockDO = itemStockRepository.findByItemId(itemDO.getId());
-            ItemModel itemModel = this.convertModelFromDataObject(itemDO,itemStockDO);
-            return itemModel;
-        }).collect(Collectors.toList());
-        return itemModelList;
+        return itemRepository.listItem()
+                .stream()
+                .map(itemDO -> {
+                    ItemStock itemStockDO = itemStockRepository.findByItemId(itemDO.getId());
+                    return this.convertModelFromDataObject(itemDO,itemStockDO);
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public ItemModel getItem(Integer id) {
+        ItemModel itemModel = null;
+
+        //先取本地缓存
+        itemModel = (ItemModel) cacheService.getFromCommonCache("item_"+id);
+
+        if(itemModel == null){
+            //根据商品的id到redis内获取
+            itemModel = (ItemModel) redisTemplate.opsForValue().get("item_"+id);
+
+            //若redis内不存在对应的itemModel,则访问下游service
+            if(itemModel == null){
+                itemModel = this.getItemById(id);
+                //设置itemModel到redis内
+                redisTemplate.opsForValue().set("item_"+id,itemModel);
+                redisTemplate.expire("item_"+id,10, TimeUnit.MINUTES);
+            }
+            //填充本地缓存
+            cacheService.setCommonCache("item_"+id,itemModel);
+        }
+        return itemModel;
     }
 
     @Override
