@@ -39,9 +39,6 @@ public class OrderServiceImpl implements OrderService {
     private ItemService itemService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private OrderRepository orderRepository;
 
     @Autowired

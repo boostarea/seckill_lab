@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.Resource;
 
 @Repository
-public interface ItemStockRepository extends JpaRepository<ItemStock, Integer> {
+public interface ItemStockRepository extends BaseRepository<ItemStock, Integer> {
 
     ItemStock findByItemId(Integer itemId);
 

@@ -48,9 +48,6 @@ public class ItemServiceImpl implements ItemService {
     private ItemRepository itemRepository;
 
     @Autowired
-    private PromoRepository promoRepository;
-
-    @Autowired
     private ItemStockRepository itemStockRepository;
 
     @Autowired
@@ -74,7 +71,6 @@ public class ItemServiceImpl implements ItemService {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
         }
 
-        //转化itemmodel->dataobject
         Item item = ItemConvertor.convertItemDOFromItemModel(itemModel);
         //写入数据库
         itemRepository.save(item);

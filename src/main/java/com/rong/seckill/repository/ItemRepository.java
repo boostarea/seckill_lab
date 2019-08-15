@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @Repository
-public interface ItemRepository extends JpaRepository<Item, Integer> {
+public interface ItemRepository extends BaseRepository<Item, Integer> {
 
     @Query("select t from Item t order by sales desc ")
     List<Item> listItem();
