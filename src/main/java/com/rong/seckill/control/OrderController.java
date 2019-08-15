@@ -65,7 +65,7 @@ public class OrderController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/generateverifycode",method = {RequestMethod.GET,RequestMethod.POST})
+    @RequestMapping(value = "generateverifycode",method = {RequestMethod.GET,RequestMethod.POST})
     public void generateverifycode(HttpServletResponse response) throws BusinessException {
         verifyToken();
     }
