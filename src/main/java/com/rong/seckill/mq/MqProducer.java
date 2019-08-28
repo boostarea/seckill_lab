@@ -104,7 +104,7 @@ public class MqProducer {
     }
 
     //事务型同步库存扣减消息
-    public boolean transactionAsyncReduceStock(Integer userId,Integer itemId,Integer promoId,Integer amount,String stockLogId){
+    public boolean transactionAsyncReduceStock(Integer userId,Integer itemId,Integer promoId,Integer amount,String stockLogId) {
         Map<String,Object> bodyMap = new HashMap<>();
         bodyMap.put("itemId",itemId);
         bodyMap.put("amount",amount);
@@ -117,24 +117,16 @@ public class MqProducer {
         argsMap.put("promoId",promoId);
         argsMap.put("stockLogId",stockLogId);
 
-        Message message = new Message(topicName,"increase",
-                JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
+        Message message = new Message(topicName,"increase", JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
         TransactionSendResult sendResult = null;
         try {
-
-            sendResult = transactionMQProducer.sendMessageInTransaction(message,argsMap);
+            sendResult = transactionMQProducer.sendMessageInTransaction(message, argsMap);
         } catch (MQClientException e) {
             e.printStackTrace();
             return false;
         }
-        if(sendResult.getLocalTransactionState() == LocalTransactionState.ROLLBACK_MESSAGE){
-            return false;
-        }else if(sendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE){
-            return true;
-        }else{
-            return false;
-        }
 
+        return sendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE;
     }
 
     //同步库存扣减消息
@@ -147,13 +139,7 @@ public class MqProducer {
                 JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
         try {
             producer.send(message);
-        } catch (MQClientException e) {
-            e.printStackTrace();
-            return false;
-        } catch (RemotingException e) {
-            e.printStackTrace();
-            return false;
-        } catch (MQBrokerException e) {
+        } catch (MQClientException | RemotingException | MQBrokerException e) {
             e.printStackTrace();
             return false;
         } catch (InterruptedException e) {

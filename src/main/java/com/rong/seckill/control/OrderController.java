@@ -9,6 +9,7 @@ import com.rong.seckill.error.BusinessException;
 import com.rong.seckill.error.EmBusinessError;
 import com.rong.seckill.mq.MqProducer;
 import com.rong.seckill.response.CommonReturnType;
+import com.rong.seckill.util.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
@@ -82,7 +83,7 @@ public class OrderController extends BaseController {
         }
         //获取用户的登陆信息
         UserModel userModel = (UserModel) redisTemplate.opsForValue().get(token);
-        if(userModel == null){
+        if(Validator.isNull(userModel)){
             throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
         }
         return userModel;

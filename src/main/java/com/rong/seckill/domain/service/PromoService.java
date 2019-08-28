@@ -13,7 +13,7 @@ public interface PromoService {
     PromoModel getPromoByItemId(Integer itemId);
 
     //活动发布
-    void publishPromo(Integer promoId) throws BusinessException;
+    void publishPromotion(Integer promoId) throws BusinessException;
 
     //生成秒杀用的令牌
     String generateSecondKillToken(Integer promoId, Integer itemId, Integer userId) throws BusinessException;

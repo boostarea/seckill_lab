@@ -7,8 +7,10 @@ import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.domain.service.UserService;
 import com.rong.seckill.entity.Promo;
+import com.rong.seckill.enums.PromoStatus;
 import com.rong.seckill.error.BusinessException;
 import com.rong.seckill.repository.PromoRepository;
+import com.rong.seckill.util.validator.Validator;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.rong.seckill.util.validator.Validator.*;
 
 /**
  * @Author chenrong
@@ -42,91 +46,81 @@ public class PromoServiceImpl implements PromoService {
     public PromoModel getPromoByItemId(Integer itemId) {
         //获取对应商品的秒杀活动信息
         Promo promo = promoRepository.findByItemId(itemId);
-
-        //dataobject->model
-        PromoModel promoModel = convertFromDataObject(promo);
-        if(promoModel == null){
+        PromoModel promoModel = getPromoModel(promo);
+        if (isNull(promoModel)) {
             return null;
-        }
-
-        //判断当前时间是否秒杀活动即将开始或正在进行
-        if(promoModel.getStartDate().isAfterNow()){
-            promoModel.setStatus(1);
-        }else if(promoModel.getEndDate().isBeforeNow()){
-            promoModel.setStatus(3);
-        }else{
-            promoModel.setStatus(2);
         }
         return promoModel;
     }
 
     @Override
-    public void publishPromo(Integer promoId) throws BusinessException {
-        //通过活动id获取活动
+    public void publishPromotion(Integer promoId) throws BusinessException {
+        //获取活动
         Promo promo = promoRepository.getOne(promoId);
-        if(promo.getItemId() == null || promo.getItemId().intValue() == 0){
+        if(isNull(promo) || isNull(promo.getItemId()) || promo.getItemId() == 0){
             return;
         }
         ItemModel itemModel = itemService.getItemById(promo.getItemId());
 
-        //将库存同步到redis内
+        //库存同步到redis
         redisTemplate.opsForValue().set("promo_item_stock_"+itemModel.getId(), itemModel.getStock());
-
-        //将大闸的限制数字设到redis内
-        redisTemplate.opsForValue().set("promo_door_count_"+promoId,itemModel.getStock().intValue() * 5);
-
+        //大闸的限制到redis内
+        redisTemplate.opsForValue().set("promo_door_count_"+promoId, itemModel.getStock() * 5);
     }
 
     @Override
     public String generateSecondKillToken(Integer promoId,Integer itemId,Integer userId) throws BusinessException {
-
-        //判断是否库存已售罄，若对应的售罄key存在，则直接返回下单失败
-        if(redisTemplate.hasKey("promo_item_stock_invalid_"+itemId)){
+        //是否售罄
+        if(redisTemplate.hasKey("promo_item_stock_invalid_" + itemId)){
             return null;
         }
         Promo promo = promoRepository.getOne(promoId);
-
-        //dataobject->model
-        PromoModel promoModel = convertFromDataObject(promo);
-        if(promoModel == null){
+        if (isNull(promo)) {
             return null;
         }
+        PromoModel promoModel = getPromoModel(promo);
 
-        //判断当前时间是否秒杀活动即将开始或正在进行
-        if(promoModel.getStartDate().isAfterNow()){
-            promoModel.setStatus(1);
-        }else if(promoModel.getEndDate().isBeforeNow()){
-            promoModel.setStatus(3);
-        }else{
-            promoModel.setStatus(2);
-        }
-        //判断活动是否正在进行
-        if(promoModel.getStatus().intValue() != 2){
+        //活动是否正在进行
+        if(!PromoStatus.DOING.getCode().equals(promoModel.getStatus())){
             return null;
         }
-        //判断item信息是否存在
+        //商品是否存在
         ItemModel itemModel = itemService.getItemByIdInCache(itemId);
-        if(itemModel == null){
+        if(isNull(itemModel)){
             return null;
         }
-        //判断用户信息是否存在
+        //用户是否存在
         UserModel userModel = userService.getUserByIdInCache(userId);
-        if(userModel == null){
+        if(isNull(userModel)){
             return null;
         }
-
-        //获取秒杀大闸的count数量
+        //是否通过秒杀大闸
         long result = redisTemplate.opsForValue().increment("promo_door_count_"+promoId,-1);
         if(result < 0){
             return null;
         }
-        //生成token并且存入redis内并给一个5分钟的有效期
+        //生成token
         String token = UUID.randomUUID().toString().replace("-","");
-
-        redisTemplate.opsForValue().set("promo_token_"+promoId+"_userid_"+userId+"_itemid_"+itemId,token);
-        redisTemplate.expire("promo_token_"+promoId+"_userid_"+userId+"_itemid_"+itemId,5, TimeUnit.MINUTES);
-
+        redisTemplate.opsForValue().set("promo_token_" + promoId + "_userid_" + userId + "_itemid_" + itemId, token);
+        redisTemplate.expire("promo_token_" + promoId + "_userid_" + userId + "_itemid_" + itemId,5, TimeUnit.MINUTES);
         return token;
+    }
+
+    private PromoModel getPromoModel(Promo promo) {
+        PromoModel promoModel = convertFromDataObject(promo);
+        if (promoModel == null) {
+            return null;
+        }
+
+        //判断秒杀活动即将开始或正在进行
+        if (promoModel.getStartDate().isAfterNow()) {
+            promoModel.setStatus(PromoStatus.PRE.getCode());
+        } else if (promoModel.getEndDate().isBeforeNow()) {
+            promoModel.setStatus(PromoStatus.FINISHED.getCode());
+        } else {
+            promoModel.setStatus(PromoStatus.DOING.getCode());
+        }
+        return promoModel;
     }
 
     private PromoModel convertFromDataObject(Promo promo){

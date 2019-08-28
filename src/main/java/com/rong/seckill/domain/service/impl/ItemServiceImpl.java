@@ -70,9 +70,7 @@ public class ItemServiceImpl implements ItemService {
         if(result.isHasErrors()){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
         }
-
         Item item = ItemConvertor.convertItemDOFromItemModel(itemModel);
-        //写入数据库
         itemRepository.save(item);
         itemModel.setId(item.getId());
 
@@ -87,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
                 .stream()
                 .map(itemDO -> {
                     ItemStock itemStockDO = itemStockRepository.findByItemId(itemDO.getId());
-                    return this.convertModelFromDataObject(itemDO,itemStockDO);
+                    return this.convertModelFromDataObject(itemDO, itemStockDO);
                 }).collect(Collectors.toList());
     }
 
@@ -134,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
         ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get("item_validate_"+id);
         if(isNull(itemModel)){
             itemModel = this.getItemById(id);
-            redisTemplate.opsForValue().set("item_validate_"+id,itemModel);
+            redisTemplate.opsForValue().set("item_validate_" + id,itemModel);
             redisTemplate.expire("item_validate_"+id,10, TimeUnit.MINUTES);
         }
         return itemModel;

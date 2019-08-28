@@ -17,6 +17,7 @@ import com.rong.seckill.mq.MqProducer;
 import com.rong.seckill.repository.OrderRepository;
 import com.rong.seckill.repository.SequenceRepository;
 import com.rong.seckill.repository.StockLogRepository;
+import com.rong.seckill.util.validator.Validator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -78,30 +79,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void create(Integer itemId, Integer amount, Integer promoId, String promoToken, UserModel userModel) throws BusinessException {
+        //活动太火爆，请稍后再试
         if(!orderCreateRateLimiter.tryAcquire()){
             throw new BusinessException(EmBusinessError.RATELIMIT);
         }
-
         //校验秒杀令牌是否正确
-        if(promoId != null){
-            String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_"+promoId+"_userid_"+userModel.getId()+"_itemid_"+itemId);
-            if(inRedisPromoToken == null){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
+        if(!Validator.isNull(promoId)){
+            String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_" + promoId + "_userid_" + userModel.getId() + "_itemid_" + itemId);
+            if(Validator.isNull(null)){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "秒杀令牌校验失败");
             }
-            if(!org.apache.commons.lang3.StringUtils.equals(promoToken,inRedisPromoToken)){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
+            if(!org.apache.commons.lang3.StringUtils.equals(promoToken, inRedisPromoToken)){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "秒杀令牌校验失败");
             }
         }
-
-
-        //同步调用线程池的submit方法
         //拥塞窗口为20的等待队列，用来队列化泄洪
         Future<Object> future = executorService.submit(() -> {
             //加入库存流水init状态
-            String stockLogId = itemService.initStockLog(itemId,amount);
+            String stockLogId = itemService.initStockLog(itemId, amount);
 
-            //再去完成对应的下单事务型消息机制
-            if(!mqProducer.transactionAsyncReduceStock(userModel.getId(),itemId,promoId,amount,stockLogId)){
+            //下单事务型消息机制
+            if(!mqProducer.transactionAsyncReduceStock(userModel.getId(), itemId, promoId, amount, stockLogId)){
                 throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"下单失败");
             }
             return null;
@@ -118,12 +116,10 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount, String stockLogId) throws BusinessException {
         //1.校验下单状态,下单的商品是否存在，用户是否合法，购买数量是否正确
-        //ItemModel itemModel = itemService.getItemById(itemId);
         ItemModel itemModel = itemService.getItemByIdInCache(itemId);
         if(itemModel == null){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"商品信息不存在");
         }
-
         if(amount <= 0 || amount > 99){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"数量信息不正确");
         }
@@ -153,7 +149,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         //加上商品的销量
-        itemService.increaseSales(itemId,amount);
+        itemService.increaseSales(itemId, amount);
 
         //设置库存流水状态为成功
         StockLog stockLogDO = stockLogRepository.getOne(stockLogId);
@@ -168,16 +164,8 @@ public class OrderServiceImpl implements OrderService {
                 public void afterCommit(){
                     //异步更新库存
                     boolean mqResult = itemService.asyncDecreaseStock(itemId,amount);
-//                    if(!mqResult){
-//                        itemService.increaseStock(itemId,amount);
-//                        throw new BusinessException(EmBusinessError.MQ_SEND_FAIL);
-//                    }
                 }
-
         });
-
-
-
         //4.返回前端
         return orderModel;
     }
@@ -215,7 +203,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public String generateToken(Integer itemId, Integer promoId, String verifyCode, UserModel userModel) throws BusinessException {
         //通过verifycode验证验证码的有效性
-        String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_"+userModel.getId());
+        String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_" + userModel.getId());
         if(StringUtils.isEmpty(redisVerifyCode)){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
         }
@@ -224,8 +212,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //获取秒杀访问令牌
-        String promoToken = promoService.generateSecondKillToken(promoId,itemId,userModel.getId());
-
+        String promoToken = promoService.generateSecondKillToken(promoId, itemId, userModel.getId());
         if(promoToken == null){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"生成令牌失败");
         }
