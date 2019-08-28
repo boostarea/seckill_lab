@@ -17,13 +17,13 @@ public interface ItemService {
     //商品列表浏览
     List<ItemModel> listItem();
 
-    ItemModel getItem(Integer id);
+    ItemModel getItem(Integer id) throws BusinessException;
 
     //商品详情浏览
-    ItemModel getItemById(Integer id);
+    ItemModel getItemById(Integer id) throws BusinessException;
 
     //item及promo model缓存模型
-    ItemModel getItemByIdInCache(Integer id);
+    ItemModel getItemByIdInCache(Integer id) throws BusinessException;
 
     //库存扣减
     boolean decreaseStock(Integer itemId, Integer amount)throws BusinessException;

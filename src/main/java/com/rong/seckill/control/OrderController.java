@@ -50,7 +50,6 @@ public class OrderController extends BaseController {
         verifyToken();
     }
 
-
     //生成秒杀令牌
     @PostMapping(value = "generatetoken", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType generatetoken(@RequestParam(name="itemId")Integer itemId,

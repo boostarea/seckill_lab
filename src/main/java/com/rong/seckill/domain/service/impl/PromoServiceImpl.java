@@ -7,6 +7,7 @@ import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.domain.service.UserService;
 import com.rong.seckill.entity.Promo;
+import com.rong.seckill.error.BusinessException;
 import com.rong.seckill.repository.PromoRepository;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
@@ -60,7 +61,7 @@ public class PromoServiceImpl implements PromoService {
     }
 
     @Override
-    public void publishPromo(Integer promoId) {
+    public void publishPromo(Integer promoId) throws BusinessException {
         //通过活动id获取活动
         Promo promo = promoRepository.getOne(promoId);
         if(promo.getItemId() == null || promo.getItemId().intValue() == 0){
@@ -77,7 +78,7 @@ public class PromoServiceImpl implements PromoService {
     }
 
     @Override
-    public String generateSecondKillToken(Integer promoId,Integer itemId,Integer userId) {
+    public String generateSecondKillToken(Integer promoId,Integer itemId,Integer userId) throws BusinessException {
 
         //判断是否库存已售罄，若对应的售罄key存在，则直接返回下单失败
         if(redisTemplate.hasKey("promo_item_stock_invalid_"+itemId)){

@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,16 +61,17 @@ public class ItemController extends BaseController {
         return CommonReturnType.create(ItemConvertor.convertVOFromModel(itemModelForReturn));
     }
 
-    @GetMapping("publishpromo")
-    public CommonReturnType publishpromo(@RequestParam(name = "id")Integer id){
+    @GetMapping("publish/{id}")
+    public CommonReturnType publishPromotion(@PathVariable Integer id) throws BusinessException {
         promoService.publishPromo(id);
         return CommonReturnType.create(null);
 
     }
 
-    @GetMapping("get")
-    public CommonReturnType getItem(@RequestParam(name = "id")Integer id){
-        ItemVO itemVO = ItemConvertor.convertVOFromModel(itemService.getItem(id));
+    @GetMapping("get/{id}")
+    public CommonReturnType get(@PathVariable Integer id) throws BusinessException {
+        ItemModel model = itemService.getItem(id);
+        ItemVO itemVO = ItemConvertor.convertVOFromModel(model);
         return CommonReturnType.create(itemVO);
 
     }

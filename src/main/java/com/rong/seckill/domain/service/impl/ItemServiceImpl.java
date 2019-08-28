@@ -8,12 +8,12 @@ import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.entity.Item;
 import com.rong.seckill.entity.ItemStock;
 import com.rong.seckill.entity.StockLog;
+import com.rong.seckill.enums.PromoStatus;
 import com.rong.seckill.error.BusinessException;
 import com.rong.seckill.error.EmBusinessError;
 import com.rong.seckill.mq.MqProducer;
 import com.rong.seckill.repository.ItemRepository;
 import com.rong.seckill.repository.ItemStockRepository;
-import com.rong.seckill.repository.PromoRepository;
 import com.rong.seckill.repository.StockLogRepository;
 import com.rong.seckill.util.convertor.ItemConvertor;
 import com.rong.seckill.util.validator.ValidationResult;
@@ -26,10 +26,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static com.rong.seckill.util.validator.Validator.isNull;
 
 /**
  * @Author chenrong
@@ -65,7 +66,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public ItemModel createItem(ItemModel itemModel) throws BusinessException {
-        //校验入参
         ValidationResult result = validator.validate(itemModel);
         if(result.isHasErrors()){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
@@ -92,54 +92,47 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemModel getItem(Integer id) {
-        ItemModel itemModel = null;
+    public ItemModel getItem(Integer id) throws BusinessException {
+        //1. 取本地缓存
+        ItemModel itemModel = (ItemModel) cacheService.getFromCommonCache("item_"+id);
 
-        //先取本地缓存
-        itemModel = (ItemModel) cacheService.getFromCommonCache("item_"+id);
-
-        if(itemModel == null){
-            //根据商品的id到redis内获取
+        if(isNull(itemModel)){
+            //2. Redis内获取
             itemModel = (ItemModel) redisTemplate.opsForValue().get("item_"+id);
-
-            //若redis内不存在对应的itemModel,则访问下游service
-            if(itemModel == null){
+            //3. DB
+            if(isNull(itemModel)){
                 itemModel = this.getItemById(id);
-                //设置itemModel到redis内
-                redisTemplate.opsForValue().set("item_"+id,itemModel);
+                redisTemplate.opsForValue().set("item_"+id, itemModel);
                 redisTemplate.expire("item_"+id,10, TimeUnit.MINUTES);
             }
             //填充本地缓存
-            cacheService.setCommonCache("item_"+id,itemModel);
+            cacheService.setCommonCache("item_"+id, itemModel);
         }
         return itemModel;
     }
 
     @Override
-    public ItemModel getItemById(Integer id) {
+    public ItemModel getItemById(Integer id) throws BusinessException {
         Item item = itemRepository.getOne(id);
-        if(item == null){
-            return null;
+        if(isNull(item)){
+            throw new BusinessException(EmBusinessError.ITEM_NOT_EXIST);
         }
-        //操作获得库存数量
+        //获得库存数量
         ItemStock itemStockDO = itemStockRepository.findByItemId(item.getId());
-
-
-        //将dataobject->model
         ItemModel itemModel = convertModelFromDataObject(item,itemStockDO);
 
         //获取活动商品信息
         PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
-        if(promoModel != null && promoModel.getStatus().intValue() != 3){
+        if(!isNull(promoModel) && !PromoStatus.FINISHED.getCode().equals(promoModel.getStatus())){
             itemModel.setPromoModel(promoModel);
         }
         return itemModel;
     }
 
     @Override
-    public ItemModel getItemByIdInCache(Integer id) {
+    public ItemModel getItemByIdInCache(Integer id) throws BusinessException {
         ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get("item_validate_"+id);
-        if(itemModel == null){
+        if(isNull(itemModel)){
             itemModel = this.getItemById(id);
             redisTemplate.opsForValue().set("item_validate_"+id,itemModel);
             redisTemplate.expire("item_validate_"+id,10, TimeUnit.MINUTES);
@@ -148,13 +141,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
-
     @Override
     @Transactional
     public boolean decreaseStock(Integer itemId, Integer amount) throws BusinessException {
         //int affectedRow =  itemStockDOMapper.decreaseStock(itemId,amount);
         long result = redisTemplate.opsForValue().increment("promo_item_stock_"+itemId,amount.intValue() * -1);
-        if(result >0){
+        if(result > 0){
             //更新库存成功
             return true;
         }else if(result == 0){
@@ -210,7 +202,6 @@ public class ItemServiceImpl implements ItemService {
         BeanUtils.copyProperties(itemDO,itemModel);
         itemModel.setPrice(new BigDecimal(itemDO.getPrice()));
         itemModel.setStock(itemStockDO.getStock());
-
         return itemModel;
     }
 
