@@ -1,15 +1,20 @@
 package com.rong.seckill;
 
-import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 /**
  * @Author chenrong
  * @Date 2019-08-11 15:27
  **/
 @SpringBootApplication(scanBasePackages = {"com.rong.seckill"})
-@MapperScan("com.rong.seckill.repository")
+@EnableJpaRepositories(basePackages = "com.rong.seckill.repository")
+
 public class App {
 
     public static void main( String[] args ) {

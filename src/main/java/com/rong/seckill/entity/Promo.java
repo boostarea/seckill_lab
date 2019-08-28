@@ -4,11 +4,13 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Data
 @Entity
-public class Promo {
+@Table(name = "promo")
+public class Promo  {
     @Id
     private Integer id;
     private String promoName;

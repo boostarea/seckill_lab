@@ -45,26 +45,6 @@ public class OrderController extends BaseController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    private MqProducer mqProducer;
-
-    @Autowired
-    private ItemService itemService;
-
-    @Autowired
-    private PromoService promoService;
-
-    private ExecutorService executorService;
-
-    private RateLimiter orderCreateRateLimiter;
-
-    @PostConstruct
-    public void init(){
-        executorService = Executors.newFixedThreadPool(20);
-        orderCreateRateLimiter = RateLimiter.create(300);
-
-    }
-
     @RequestMapping(value = "generateverifycode",method = {RequestMethod.GET,RequestMethod.POST})
     public void generateverifycode(HttpServletResponse response) throws BusinessException {
         verifyToken();
@@ -78,21 +58,7 @@ public class OrderController extends BaseController {
                                           @RequestParam(name="verifyCode")String verifyCode) throws BusinessException {
 
         UserModel userModel = verifyToken();
-        //通过verifycode验证验证码的有效性
-        String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_"+userModel.getId());
-        if(StringUtils.isEmpty(redisVerifyCode)){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
-        }
-        if(!redisVerifyCode.equalsIgnoreCase(verifyCode)){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法，验证码错误");
-        }
-
-        //获取秒杀访问令牌
-        String promoToken = promoService.generateSecondKillToken(promoId,itemId,userModel.getId());
-
-        if(promoToken == null){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"生成令牌失败");
-        }
+        String promoToken =orderService.generateToken(itemId, promoId, verifyCode, userModel);
         //返回对应的结果
         return CommonReturnType.create(promoToken);
     }
@@ -104,43 +70,10 @@ public class OrderController extends BaseController {
                                         @RequestParam(name="promoId",required = false)Integer promoId,
                                         @RequestParam(name="promoToken",required = false)String promoToken) throws BusinessException {
 
-        if(!orderCreateRateLimiter.tryAcquire()){
-            throw new BusinessException(EmBusinessError.RATELIMIT);
-        }
-
-        UserModel userModel = this.verifyToken();
-        //校验秒杀令牌是否正确
-        if(promoId != null){
-            String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_"+promoId+"_userid_"+userModel.getId()+"_itemid_"+itemId);
-            if(inRedisPromoToken == null){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
-            }
-            if(!org.apache.commons.lang3.StringUtils.equals(promoToken,inRedisPromoToken)){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
-            }
-        }
-
-
-        //同步调用线程池的submit方法
-        //拥塞窗口为20的等待队列，用来队列化泄洪
-        Future<Object> future = executorService.submit(() -> {
-            //加入库存流水init状态
-            String stockLogId = itemService.initStockLog(itemId,amount);
-
-            //再去完成对应的下单事务型消息机制
-            if(!mqProducer.transactionAsyncReduceStock(userModel.getId(),itemId,promoId,amount,stockLogId)){
-                throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"下单失败");
-            }
-            return null;
-        });
-
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
-        }
+        orderService.create(itemId, amount, promoId, promoToken, verifyToken());
         return CommonReturnType.create(null);
     }
+
 
     private UserModel verifyToken() throws BusinessException {
         //根据token获取用户信息

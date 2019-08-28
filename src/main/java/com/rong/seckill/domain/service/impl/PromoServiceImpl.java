@@ -40,7 +40,7 @@ public class PromoServiceImpl implements PromoService {
     @Override
     public PromoModel getPromoByItemId(Integer itemId) {
         //获取对应商品的秒杀活动信息
-        Promo promo = promoRepository.getOne(itemId);
+        Promo promo = promoRepository.findByItemId(itemId);
 
         //dataobject->model
         PromoModel promoModel = convertFromDataObject(promo);

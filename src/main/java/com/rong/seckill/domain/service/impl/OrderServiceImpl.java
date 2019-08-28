@@ -1,29 +1,41 @@
 package com.rong.seckill.domain.service.impl;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.rong.seckill.domain.model.ItemModel;
 import com.rong.seckill.domain.model.OrderModel;
+import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.OrderService;
+import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.domain.service.UserService;
 import com.rong.seckill.entity.Order;
 import com.rong.seckill.entity.Sequence;
 import com.rong.seckill.entity.StockLog;
 import com.rong.seckill.error.BusinessException;
 import com.rong.seckill.error.EmBusinessError;
+import com.rong.seckill.mq.MqProducer;
 import com.rong.seckill.repository.OrderRepository;
 import com.rong.seckill.repository.SequenceRepository;
 import com.rong.seckill.repository.StockLogRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationAdapter;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @Author chenrong
@@ -44,6 +56,63 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private StockLogRepository stockLogRepository;
 
+    @Autowired
+    private PromoService promoService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private MqProducer mqProducer;
+
+    private ExecutorService executorService;
+
+    private RateLimiter orderCreateRateLimiter;
+
+    @PostConstruct
+    public void init(){
+        executorService = Executors.newFixedThreadPool(20);
+        orderCreateRateLimiter = RateLimiter.create(300);
+
+    }
+
+    @Override
+    public void create(Integer itemId, Integer amount, Integer promoId, String promoToken, UserModel userModel) throws BusinessException {
+        if(!orderCreateRateLimiter.tryAcquire()){
+            throw new BusinessException(EmBusinessError.RATELIMIT);
+        }
+
+        //校验秒杀令牌是否正确
+        if(promoId != null){
+            String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_"+promoId+"_userid_"+userModel.getId()+"_itemid_"+itemId);
+            if(inRedisPromoToken == null){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
+            }
+            if(!org.apache.commons.lang3.StringUtils.equals(promoToken,inRedisPromoToken)){
+                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"秒杀令牌校验失败");
+            }
+        }
+
+
+        //同步调用线程池的submit方法
+        //拥塞窗口为20的等待队列，用来队列化泄洪
+        Future<Object> future = executorService.submit(() -> {
+            //加入库存流水init状态
+            String stockLogId = itemService.initStockLog(itemId,amount);
+
+            //再去完成对应的下单事务型消息机制
+            if(!mqProducer.transactionAsyncReduceStock(userModel.getId(),itemId,promoId,amount,stockLogId)){
+                throw new BusinessException(EmBusinessError.UNKNOWN_ERROR,"下单失败");
+            }
+            return null;
+        });
+
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
+        }
+    }
 
     @Override
     @Transactional
@@ -142,6 +211,27 @@ public class OrderServiceImpl implements OrderService {
 
         return stringBuilder.toString();
     }
+
+    @Override
+    public String generateToken(Integer itemId, Integer promoId, String verifyCode, UserModel userModel) throws BusinessException {
+        //通过verifycode验证验证码的有效性
+        String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_"+userModel.getId());
+        if(StringUtils.isEmpty(redisVerifyCode)){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
+        }
+        if(!redisVerifyCode.equalsIgnoreCase(verifyCode)){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法，验证码错误");
+        }
+
+        //获取秒杀访问令牌
+        String promoToken = promoService.generateSecondKillToken(promoId,itemId,userModel.getId());
+
+        if(promoToken == null){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"生成令牌失败");
+        }
+        return promoToken;
+    }
+
     private Order convertFromOrderModel(OrderModel orderModel){
         if(orderModel == null){
             return null;
