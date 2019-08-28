@@ -40,19 +40,16 @@ public class MqConsumer {
         consumer.setNamesrvAddr(nameAddr);
         consumer.subscribe(topicName,"*");
 
-        consumer.registerMessageListener(new MessageListenerConcurrently() {
-            @Override
-            public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-                //实现库存真正到数据库内扣减的逻辑
-                Message msg = msgs.get(0);
-                String jsonString  = new String(msg.getBody());
-                Map<String,Object>map = JSON.parseObject(jsonString, Map.class);
-                Integer itemId = (Integer) map.get("itemId");
-                Integer amount = (Integer) map.get("amount");
+        consumer.registerMessageListener((MessageListenerConcurrently) (msgs, context) -> {
+            //实现库存真正到数据库内扣减
+            Message msg = msgs.get(0);
+            String jsonString  = new String(msg.getBody());
+            Map<String,Object>map = JSON.parseObject(jsonString, Map.class);
+            Integer itemId = (Integer) map.get("itemId");
+            Integer amount = (Integer) map.get("amount");
 
-                itemStockRepository.decreaseStock(itemId,amount);
-                return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-            }
+            itemStockRepository.decreaseStock(itemId, amount);
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
 
         consumer.start();

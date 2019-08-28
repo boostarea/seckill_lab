@@ -54,11 +54,10 @@ public class OrderController extends BaseController {
     //生成秒杀令牌
     @PostMapping(value = "generatetoken", consumes={CONTENT_TYPE_FORMED})
     public CommonReturnType generatetoken(@RequestParam(name="itemId")Integer itemId,
-                                          @RequestParam(name="promoId")Integer promoId,
-                                          @RequestParam(name="verifyCode")String verifyCode) throws BusinessException {
+                                          @RequestParam(name="promoId")Integer promoId) throws BusinessException {
 
         UserModel userModel = verifyToken();
-        String promoToken =orderService.generateToken(itemId, promoId, verifyCode, userModel);
+        String promoToken =orderService.generateToken(itemId, promoId, userModel);
         //返回对应的结果
         return CommonReturnType.create(promoToken);
     }
@@ -77,7 +76,8 @@ public class OrderController extends BaseController {
 
     private UserModel verifyToken() throws BusinessException {
         //根据token获取用户信息
-        String token = httpServletRequest.getParameterMap().get("token")[0];
+        String token = "2a605b86b7d9423e80c79c47df866fb1";
+        // String token = httpServletRequest.getParameterMap().get("token")[0];
         if(StringUtils.isEmpty(token)){
             throw new BusinessException(EmBusinessError.USER_NOT_LOGIN,"用户还未登陆，不能下单");
         }

@@ -127,12 +127,13 @@ public class ItemServiceImpl implements ItemService {
         return itemModel;
     }
 
+    // 用户风控模型
     @Override
     public ItemModel getItemByIdInCache(Integer id) throws BusinessException {
-        ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get("item_validate_"+id);
+        ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get("item_validate_" + id);
         if(isNull(itemModel)){
             itemModel = this.getItemById(id);
-            redisTemplate.opsForValue().set("item_validate_" + id,itemModel);
+            redisTemplate.opsForValue().set("item_validate_" + id, itemModel);
             redisTemplate.expire("item_validate_"+id,10, TimeUnit.MINUTES);
         }
         return itemModel;
@@ -143,40 +144,37 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public boolean decreaseStock(Integer itemId, Integer amount) throws BusinessException {
         //int affectedRow =  itemStockDOMapper.decreaseStock(itemId,amount);
-        long result = redisTemplate.opsForValue().increment("promo_item_stock_"+itemId,amount.intValue() * -1);
+        long result = redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount * -1);
         if(result > 0){
             //更新库存成功
             return true;
         }else if(result == 0){
             //打上库存已售罄的标识
-            redisTemplate.opsForValue().set("promo_item_stock_invalid_"+itemId,"true");
-
-            //更新库存成功
+            redisTemplate.opsForValue().set("promo_item_stock_invalid_" + itemId, "true");
             return true;
         }else{
             //更新库存失败
             increaseStock(itemId,amount);
             return false;
         }
-
     }
 
     @Override
     public boolean increaseStock(Integer itemId, Integer amount) throws BusinessException {
-        redisTemplate.opsForValue().increment("promo_item_stock_"+itemId,amount.intValue());
+        redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount);
         return true;
     }
 
     @Override
     public boolean asyncDecreaseStock(Integer itemId, Integer amount) {
-        boolean mqResult = mqProducer.asyncReduceStock(itemId,amount);
+        boolean mqResult = mqProducer.asyncReduceStock(itemId, amount);
         return mqResult;
     }
 
     @Override
     @Transactional
     public void increaseSales(Integer itemId, Integer amount) throws BusinessException {
-        itemRepository.increaseSales(itemId,amount);
+        itemRepository.increaseSales(itemId, amount);
     }
 
     //初始化对应的库存流水
@@ -190,9 +188,7 @@ public class ItemServiceImpl implements ItemService {
         stockLog.setStatus(1);
 
         stockLogRepository.save(stockLog);
-
         return stockLog.getStockLogId();
-
     }
 
     private ItemModel convertModelFromDataObject(Item itemDO,ItemStock itemStockDO){

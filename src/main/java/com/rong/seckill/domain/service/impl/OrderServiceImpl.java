@@ -86,14 +86,14 @@ public class OrderServiceImpl implements OrderService {
         //校验秒杀令牌是否正确
         if(!Validator.isNull(promoId)){
             String inRedisPromoToken = (String) redisTemplate.opsForValue().get("promo_token_" + promoId + "_userid_" + userModel.getId() + "_itemid_" + itemId);
-            if(Validator.isNull(null)){
+            if(Validator.isNull(inRedisPromoToken)){
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "秒杀令牌校验失败");
             }
             if(!org.apache.commons.lang3.StringUtils.equals(promoToken, inRedisPromoToken)){
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "秒杀令牌校验失败");
             }
         }
-        //拥塞窗口为20的等待队列，用来队列化泄洪
+        //下游拥塞窗口为20的等待队列，用来队列化泄洪
         Future<Object> future = executorService.submit(() -> {
             //加入库存流水init状态
             String stockLogId = itemService.initStockLog(itemId, amount);
@@ -124,7 +124,7 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"数量信息不正确");
         }
 
-        //2.落单减库存
+        //2.落单减库存（redis）
         boolean result = itemService.decreaseStock(itemId,amount);
         if(!result){
             throw new BusinessException(EmBusinessError.STOCK_NOT_ENOUGH);
@@ -148,7 +148,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = convertFromOrderModel(orderModel);
         orderRepository.save(order);
 
-        //加上商品的销量
+        //todo 加上商品的销量，也需要异步化
         itemService.increaseSales(itemId, amount);
 
         //设置库存流水状态为成功
@@ -159,14 +159,14 @@ public class OrderServiceImpl implements OrderService {
         stockLogDO.setStatus(2);
         stockLogRepository.save(stockLogDO);
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-                @Override
-                public void afterCommit(){
-                    //异步更新库存
-                    boolean mqResult = itemService.asyncDecreaseStock(itemId,amount);
-                }
-        });
-        //4.返回前端
+        // // 最近Transaction注解，成功commit后，被执行
+        // TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+        //         @Override
+        //         public void afterCommit(){
+        //             //需要保证mq必定发送成功（之前数据库已操作成功）
+        //             boolean mqResult = itemService.asyncDecreaseStock(itemId,amount);
+        //         }
+        // });
         return orderModel;
     }
 
@@ -201,15 +201,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String generateToken(Integer itemId, Integer promoId, String verifyCode, UserModel userModel) throws BusinessException {
+    public String generateToken(Integer itemId, Integer promoId, UserModel userModel) throws BusinessException {
         //通过verifycode验证验证码的有效性
-        String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_" + userModel.getId());
-        if(StringUtils.isEmpty(redisVerifyCode)){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
-        }
-        if(!redisVerifyCode.equalsIgnoreCase(verifyCode)){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法，验证码错误");
-        }
+        // String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_" + userModel.getId());
+        // if(StringUtils.isEmpty(redisVerifyCode)){
+        //     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
+        // }
+        // if(!redisVerifyCode.equalsIgnoreCase(verifyCode)){
+        //     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法，验证码错误");
+        // }
 
         //获取秒杀访问令牌
         String promoToken = promoService.generateSecondKillToken(promoId, itemId, userModel.getId());

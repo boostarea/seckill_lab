@@ -154,6 +154,8 @@ public class UserController  extends BaseController{
         //生成登录凭证token，UUID
         String uuidToken = UUID.randomUUID().toString();
         uuidToken = uuidToken.replace("-","");
+
+        uuidToken = "2a605b86b7d9423e80c79c47df866fb1";
         //建议token和用户登陆态之间的联系
         redisTemplate.opsForValue().set(uuidToken,userModel);
         redisTemplate.expire(uuidToken,1, TimeUnit.HOURS);

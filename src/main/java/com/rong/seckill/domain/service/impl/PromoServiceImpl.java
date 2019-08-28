@@ -61,6 +61,7 @@ public class PromoServiceImpl implements PromoService {
             return;
         }
         ItemModel itemModel = itemService.getItemById(promo.getItemId());
+        //todo 活动开始，自动上架商品，避免扣减非活动库存
 
         //库存同步到redis
         redisTemplate.opsForValue().set("promo_item_stock_"+itemModel.getId(), itemModel.getStock());

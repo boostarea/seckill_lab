@@ -10,6 +10,6 @@ import java.util.Optional;
 public class Validator {
 
     public static <T> boolean isNull(T t) {
-        return Optional.ofNullable(t).isPresent();
+        return !Optional.ofNullable(t).isPresent();
     }
 }

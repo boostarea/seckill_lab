@@ -50,7 +50,7 @@ public class MqProducer {
 
     @PostConstruct
     public void init() throws MQClientException {
-        //做mq producer的初始化
+        // producer的group无任何意义
         producer = new DefaultMQProducer("producer_group");
         producer.setNamesrvAddr(nameAddr);
         producer.start();
@@ -62,7 +62,7 @@ public class MqProducer {
         transactionMQProducer.setTransactionListener(new TransactionListener() {
             @Override
             public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-                //真正要做的事  创建订单
+                //真正要做的事  创建订单，事务型消息驱动下单
                 Integer itemId = (Integer) ((Map)arg).get("itemId");
                 Integer promoId = (Integer) ((Map)arg).get("promoId");
                 Integer userId = (Integer) ((Map)arg).get("userId");
@@ -81,6 +81,7 @@ public class MqProducer {
                 return LocalTransactionState.COMMIT_MESSAGE;
             }
 
+            //executeLocalTransaction 长时间没响应
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt msg) {
                 //根据是否扣减库存成功，来判断要返回COMMIT,ROLLBACK还是继续UNKNOWN
@@ -88,9 +89,11 @@ public class MqProducer {
                 Map<String,Object>map = JSON.parseObject(jsonString, Map.class);
                 Integer itemId = (Integer) map.get("itemId");
                 Integer amount = (Integer) map.get("amount");
+                //库存操作流水，
                 String stockLogId = (String) map.get("stockLogId");
                 StockLog stockLog = stockLogRepository.getOne(stockLogId);
                 if(stockLog == null){
+                    // 不会无脑重试，减频度重试，7天后删除
                     return LocalTransactionState.UNKNOW;
                 }
                 if(stockLog.getStatus().intValue() == 2){
@@ -118,8 +121,9 @@ public class MqProducer {
         argsMap.put("stockLogId",stockLogId);
 
         Message message = new Message(topicName,"increase", JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
-        TransactionSendResult sendResult = null;
+        TransactionSendResult sendResult;
         try {
+            // 事务型消息，二阶段提交，PRE消息，执行executeLocalTransaction
             sendResult = transactionMQProducer.sendMessageInTransaction(message, argsMap);
         } catch (MQClientException e) {
             e.printStackTrace();
@@ -135,14 +139,11 @@ public class MqProducer {
         bodyMap.put("itemId",itemId);
         bodyMap.put("amount",amount);
 
-        Message message = new Message(topicName,"increase",
-                JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
+        // 野生投放
+        Message message = new Message(topicName,"increase", JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
         try {
             producer.send(message);
-        } catch (MQClientException | RemotingException | MQBrokerException e) {
-            e.printStackTrace();
-            return false;
-        } catch (InterruptedException e) {
+        } catch (MQClientException | RemotingException | MQBrokerException | InterruptedException e) {
             e.printStackTrace();
             return false;
         }

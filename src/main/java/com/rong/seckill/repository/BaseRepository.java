@@ -14,6 +14,6 @@ public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     default <S extends T> S save(S entity) {
         //todo 分布式ID
 
-        return save(entity);
+        return saveAndFlush(entity);
     }
 }
