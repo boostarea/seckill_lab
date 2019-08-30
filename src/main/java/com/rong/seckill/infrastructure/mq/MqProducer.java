@@ -1,9 +1,9 @@
-package com.rong.seckill.mq;
+package com.rong.seckill.infrastructure.mq;
 
 import com.alibaba.fastjson.JSON;
 import com.rong.seckill.domain.service.OrderService;
-import com.rong.seckill.entity.StockLog;
-import com.rong.seckill.error.BusinessException;
+import com.rong.seckill.infrastructure.entity.StockLog;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.repository.StockLogRepository;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -26,7 +26,7 @@ import java.util.Map;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Component
 public class MqProducer {

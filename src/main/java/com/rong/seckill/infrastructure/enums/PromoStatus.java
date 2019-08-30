@@ -1,4 +1,4 @@
-package com.rong.seckill.enums;
+package com.rong.seckill.infrastructure.enums;
 
 
 /**

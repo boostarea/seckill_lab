@@ -1,11 +1,11 @@
-package com.rong.seckill.control;
+package com.rong.seckill.infrastructure.web;
 
-import com.rong.seckill.control.vo.ItemVO;
+import com.rong.seckill.infrastructure.web.vo.ItemVO;
 import com.rong.seckill.domain.model.ItemModel;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.response.CommonReturnType;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.CommonReturnType;
 import com.rong.seckill.util.convertor.ItemConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @RestController
 @RequestMapping("item")
@@ -55,7 +55,6 @@ public class ItemController extends BaseController {
     public CommonReturnType publishPromotion(@PathVariable Integer id) throws BusinessException {
         promoService.publishPromotion(id);
         return CommonReturnType.create(null);
-
     }
 
     @GetMapping("get/{id}")

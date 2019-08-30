@@ -1,11 +1,11 @@
 package com.rong.seckill.domain.service;
 
 import com.rong.seckill.domain.model.UserModel;
-import com.rong.seckill.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 public interface UserService {
     //通过用户ID获取用户对象的方法

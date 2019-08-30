@@ -6,11 +6,10 @@ import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.entity.Promo;
-import com.rong.seckill.enums.PromoStatus;
-import com.rong.seckill.error.BusinessException;
+import com.rong.seckill.infrastructure.entity.Promo;
+import com.rong.seckill.infrastructure.enums.PromoStatus;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.repository.PromoRepository;
-import com.rong.seckill.util.validator.Validator;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ import static com.rong.seckill.util.validator.Validator.*;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Service
 public class PromoServiceImpl implements PromoService {

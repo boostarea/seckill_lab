@@ -1,10 +1,10 @@
-package com.rong.seckill.response;
+package com.rong.seckill.infrastructure.response;
 
 import lombok.Data;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Data
 public class CommonReturnType {

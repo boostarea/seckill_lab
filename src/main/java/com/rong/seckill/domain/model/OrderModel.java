@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 /**
  * @Description 用户下单的交易模型
  * @Author chenrong
- * @Date 2019-08-11 18:27
+ * @Date 2019-08-28 18:27
  **/
 @Data
 public class OrderModel {

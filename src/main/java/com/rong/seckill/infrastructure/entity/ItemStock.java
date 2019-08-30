@@ -1,4 +1,4 @@
-package com.rong.seckill.entity;
+package com.rong.seckill.infrastructure.entity;
 
 import lombok.Data;
 
@@ -7,9 +7,9 @@ import javax.persistence.Id;
 
 @Data
 @Entity
-public class UserPassword {
+public class ItemStock {
     @Id
     private Integer id;
-    private String encrptPassword;
-    private Integer userId;
+    private Integer stock;
+    private Integer itemId;
 }

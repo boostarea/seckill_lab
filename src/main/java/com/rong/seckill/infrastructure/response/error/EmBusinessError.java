@@ -1,8 +1,8 @@
-package com.rong.seckill.error;
+package com.rong.seckill.infrastructure.response.error;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 public enum EmBusinessError implements CommonError {
     //通用错误类型10001

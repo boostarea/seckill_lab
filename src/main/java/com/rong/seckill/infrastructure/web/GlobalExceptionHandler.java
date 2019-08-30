@@ -1,8 +1,8 @@
-package com.rong.seckill.control;
+package com.rong.seckill.infrastructure.web;
 
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
-import com.rong.seckill.response.CommonReturnType;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
+import com.rong.seckill.infrastructure.response.CommonReturnType;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,7 +16,7 @@ import java.util.Map;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @ControllerAdvice
 public class GlobalExceptionHandler{

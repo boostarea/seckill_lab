@@ -1,14 +1,10 @@
-package com.rong.seckill.control;
+package com.rong.seckill.infrastructure.web;
 
-import com.google.common.util.concurrent.RateLimiter;
 import com.rong.seckill.domain.model.UserModel;
-import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.OrderService;
-import com.rong.seckill.domain.service.PromoService;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
-import com.rong.seckill.mq.MqProducer;
-import com.rong.seckill.response.CommonReturnType;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
+import com.rong.seckill.infrastructure.response.CommonReturnType;
 import com.rong.seckill.util.validator.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,18 +16,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @RestController
 @RequestMapping("order")
@@ -52,19 +42,18 @@ public class OrderController extends BaseController {
     }
 
     //生成秒杀令牌
-    @PostMapping(value = "generatetoken", consumes={CONTENT_TYPE_FORMED})
-    public CommonReturnType generatetoken(@RequestParam(name="itemId")Integer itemId,
+    @PostMapping(value = "generateToken", consumes={CONTENT_TYPE_FORMED})
+    public CommonReturnType generateToken(@RequestParam(name="itemId")Integer itemId,
                                           @RequestParam(name="promoId")Integer promoId) throws BusinessException {
 
         UserModel userModel = verifyToken();
         String promoToken =orderService.generateToken(itemId, promoId, userModel);
-        //返回对应的结果
         return CommonReturnType.create(promoToken);
     }
 
     //下单
-    @PostMapping(value = "createorder", consumes={CONTENT_TYPE_FORMED})
-    public CommonReturnType createOrder(@RequestParam(name="itemId")Integer itemId,
+    @PostMapping(value = "create", consumes={CONTENT_TYPE_FORMED})
+    public CommonReturnType create(@RequestParam(name="itemId")Integer itemId,
                                         @RequestParam(name="amount")Integer amount,
                                         @RequestParam(name="promoId",required = false)Integer promoId,
                                         @RequestParam(name="promoToken",required = false)String promoToken) throws BusinessException {

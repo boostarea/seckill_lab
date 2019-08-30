@@ -1,10 +1,10 @@
-package com.rong.seckill.control.vo;
+package com.rong.seckill.infrastructure.web.vo;
 
 import lombok.Data;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Data
 public class UserVO {

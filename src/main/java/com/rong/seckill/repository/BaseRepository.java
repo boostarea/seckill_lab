@@ -6,7 +6,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 /**
  * @Description TODO
  * @Author chenrong
- * @Date 2019-08-15 16:06
+ * @Date 2019-08-26 16:06
  **/
 @NoRepositoryBean
 public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {

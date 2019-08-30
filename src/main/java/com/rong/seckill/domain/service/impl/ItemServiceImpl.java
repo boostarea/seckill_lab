@@ -5,13 +5,13 @@ import com.rong.seckill.domain.model.PromoModel;
 import com.rong.seckill.domain.service.CacheService;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
-import com.rong.seckill.entity.Item;
-import com.rong.seckill.entity.ItemStock;
-import com.rong.seckill.entity.StockLog;
-import com.rong.seckill.enums.PromoStatus;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
-import com.rong.seckill.mq.MqProducer;
+import com.rong.seckill.infrastructure.entity.Item;
+import com.rong.seckill.infrastructure.entity.ItemStock;
+import com.rong.seckill.infrastructure.entity.StockLog;
+import com.rong.seckill.infrastructure.enums.PromoStatus;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
+import com.rong.seckill.infrastructure.mq.MqProducer;
 import com.rong.seckill.repository.ItemRepository;
 import com.rong.seckill.repository.ItemStockRepository;
 import com.rong.seckill.repository.StockLogRepository;
@@ -34,7 +34,7 @@ import static com.rong.seckill.util.validator.Validator.isNull;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Service
 public class ItemServiceImpl implements ItemService {

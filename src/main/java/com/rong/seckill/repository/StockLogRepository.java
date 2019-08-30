@@ -1,6 +1,6 @@
 package com.rong.seckill.repository;
 
-import com.rong.seckill.entity.StockLog;
+import com.rong.seckill.infrastructure.entity.StockLog;
 import org.springframework.stereotype.Repository;
 
 @Repository

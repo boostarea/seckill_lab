@@ -7,13 +7,12 @@ import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.OrderService;
 import com.rong.seckill.domain.service.PromoService;
-import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.entity.Order;
-import com.rong.seckill.entity.Sequence;
-import com.rong.seckill.entity.StockLog;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
-import com.rong.seckill.mq.MqProducer;
+import com.rong.seckill.infrastructure.entity.Order;
+import com.rong.seckill.infrastructure.entity.Sequence;
+import com.rong.seckill.infrastructure.entity.StockLog;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
+import com.rong.seckill.infrastructure.mq.MqProducer;
 import com.rong.seckill.repository.OrderRepository;
 import com.rong.seckill.repository.SequenceRepository;
 import com.rong.seckill.repository.StockLogRepository;
@@ -24,10 +23,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
@@ -40,7 +35,7 @@ import java.util.concurrent.Future;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Service
 public class OrderServiceImpl implements OrderService {

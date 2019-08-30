@@ -10,7 +10,7 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @SpringBootApplication(scanBasePackages = {"com.rong.seckill"})
 @EnableJpaRepositories(basePackages = "com.rong.seckill.repository")

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Component
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 3600)

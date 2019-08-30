@@ -1,0 +1,52 @@
+version: '3.7'
+services:
+  redis:
+    image: redis:latest
+    networks:
+      ms:
+        aliases:
+          - redis
+    ports:
+      - 6379:6379
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+  mysql:
+    image: mysql:5.6.45
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      ms:
+        aliases:
+          - mysql
+    ports:
+      - 3306:3306
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+  rocketmq:
+    image: rocketmq:latest
+    networks:
+      ms:
+        aliases:
+          - rocketmq
+    ports:
+      - 9876:9876
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+  openresty:
+    image: openresty/openresty:latest
+    networks:
+      ms:
+        aliases:
+          - openresty
+    ports:
+      - 80:80
+    volumes:
+      - /etc/timezone:/etc/timezone
+      - /etc/localtime:/etc/localtime
+      - /opt/nginx/conf.d:/etc/nginx/conf.d
+networks:
+  ms:
+    external: true

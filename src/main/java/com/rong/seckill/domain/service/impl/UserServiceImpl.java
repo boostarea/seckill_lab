@@ -2,10 +2,10 @@ package com.rong.seckill.domain.service.impl;
 
 import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.entity.User;
-import com.rong.seckill.entity.UserPassword;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
+import com.rong.seckill.infrastructure.entity.User;
+import com.rong.seckill.infrastructure.entity.UserPassword;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
 import com.rong.seckill.repository.UserPasswordRepository;
 import com.rong.seckill.repository.UserRepository;
 import com.rong.seckill.util.validator.ValidationResult;
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @Service
 public class UserServiceImpl implements UserService {

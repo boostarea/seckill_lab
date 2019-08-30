@@ -1,22 +1,19 @@
-package com.rong.seckill.control;
+package com.rong.seckill.infrastructure.web;
 
-import com.rong.seckill.control.vo.UserVO;
+import com.rong.seckill.infrastructure.web.vo.UserVO;
 import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.error.BusinessException;
-import com.rong.seckill.error.EmBusinessError;
-import com.rong.seckill.response.CommonReturnType;
+import com.rong.seckill.infrastructure.response.error.BusinessException;
+import com.rong.seckill.infrastructure.response.error.EmBusinessError;
+import com.rong.seckill.infrastructure.response.CommonReturnType;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import sun.misc.BASE64Encoder;
 
@@ -31,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author chenrong
- * @Date 2019-08-11 15:27
+ * @Date 2019-08-28 15:27
  **/
 @RestController
 @RequestMapping("user")
