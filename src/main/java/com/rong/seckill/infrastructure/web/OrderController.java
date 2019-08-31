@@ -6,6 +6,7 @@ import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.infrastructure.response.error.EmBusinessError;
 import com.rong.seckill.infrastructure.response.CommonReturnType;
 import com.rong.seckill.util.validator.Validator;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
@@ -23,18 +24,17 @@ import javax.servlet.http.HttpServletResponse;
  * @Author chenrong
  * @Date 2019-08-28 15:27
  **/
+@AllArgsConstructor
 @RestController
 @RequestMapping("order")
 @CrossOrigin(origins = {"*"},allowCredentials = "true")
 public class OrderController extends BaseController {
-    @Autowired
-    private OrderService orderService;
 
-    @Autowired
-    private HttpServletRequest httpServletRequest;
+    private final OrderService orderService;
 
-    @Autowired
-    private RedisTemplate redisTemplate;
+    private final HttpServletRequest httpServletRequest;
+
+    private final  RedisTemplate redisTemplate;
 
     @RequestMapping(value = "generateverifycode",method = {RequestMethod.GET,RequestMethod.POST})
     public void generateverifycode(HttpServletResponse response) throws BusinessException {
