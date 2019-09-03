@@ -1,6 +1,6 @@
 package com.rong.seckill.repository;
 
-import com.rong.seckill.infrastructure.entity.Order;
+import com.rong.seckill.repository.entity.Order;
 import org.springframework.stereotype.Repository;
 
 @Repository

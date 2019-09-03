@@ -1,4 +1,4 @@
-package com.rong.seckill.infrastructure.entity;
+package com.rong.seckill.repository.entity;
 
 import lombok.Data;
 

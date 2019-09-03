@@ -62,7 +62,6 @@ public class ItemController extends BaseController {
         ItemModel model = itemService.getItem(id);
         ItemVO itemVO = ItemConvertor.convertVOFromModel(model);
         return CommonReturnType.create(itemVO);
-
     }
 
     @GetMapping("list")

@@ -2,8 +2,8 @@ package com.rong.seckill.domain.service.impl;
 
 import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.infrastructure.entity.User;
-import com.rong.seckill.infrastructure.entity.UserPassword;
+import com.rong.seckill.repository.entity.User;
+import com.rong.seckill.repository.entity.UserPassword;
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.infrastructure.response.error.EmBusinessError;
 import com.rong.seckill.repository.UserPasswordRepository;

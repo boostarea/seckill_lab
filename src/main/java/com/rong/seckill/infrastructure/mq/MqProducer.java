@@ -2,7 +2,7 @@ package com.rong.seckill.infrastructure.mq;
 
 import com.alibaba.fastjson.JSON;
 import com.rong.seckill.domain.service.OrderService;
-import com.rong.seckill.infrastructure.entity.StockLog;
+import com.rong.seckill.repository.entity.StockLog;
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.repository.StockLogRepository;
 import org.apache.rocketmq.client.exception.MQBrokerException;

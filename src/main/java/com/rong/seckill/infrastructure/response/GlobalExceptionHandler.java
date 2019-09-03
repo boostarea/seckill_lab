@@ -1,4 +1,4 @@
-package com.rong.seckill.infrastructure.web;
+package com.rong.seckill.infrastructure.response;
 
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.infrastructure.response.error.EmBusinessError;

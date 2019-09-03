@@ -6,7 +6,7 @@ import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.ItemService;
 import com.rong.seckill.domain.service.PromoService;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.infrastructure.entity.Promo;
+import com.rong.seckill.repository.entity.Promo;
 import com.rong.seckill.infrastructure.enums.PromoStatus;
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.repository.PromoRepository;

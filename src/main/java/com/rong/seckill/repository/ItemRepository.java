@@ -1,6 +1,6 @@
 package com.rong.seckill.repository;
 
-import com.rong.seckill.infrastructure.entity.Item;
+import com.rong.seckill.repository.entity.Item;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

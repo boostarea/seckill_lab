@@ -3,8 +3,8 @@ package com.rong.seckill.util.convertor;
 import com.rong.seckill.infrastructure.web.vo.ItemVO;
 import com.rong.seckill.domain.model.ItemModel;
 import com.rong.seckill.domain.model.PromoModel;
-import com.rong.seckill.infrastructure.entity.Item;
-import com.rong.seckill.infrastructure.entity.ItemStock;
+import com.rong.seckill.repository.entity.Item;
+import com.rong.seckill.repository.entity.ItemStock;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.BeanUtils;
 

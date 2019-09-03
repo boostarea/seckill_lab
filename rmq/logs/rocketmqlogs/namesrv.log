@@ -3182,3 +3182,259 @@ java.io.IOException: Connection reset by peer
 2019-09-01 12:11:14 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.3:57680]
 2019-09-01 12:11:20 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.3:57680]
 2019-09-01 12:11:20 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.3:57680]
+2019-09-02 10:07:52 INFO main - rocketmqHome=/opt/rocketmq-4.5.1
+2019-09-02 10:07:52 INFO main - kvConfigPath=/opt/namesrv/kvConfig.json
+2019-09-02 10:07:52 INFO main - configStorePath=/opt/namesrv/namesrv.properties
+2019-09-02 10:07:52 INFO main - productEnvName=center
+2019-09-02 10:07:52 INFO main - clusterTest=false
+2019-09-02 10:07:52 INFO main - orderMessageEnable=false
+2019-09-02 10:07:52 INFO main - listenPort=9876
+2019-09-02 10:07:52 INFO main - serverWorkerThreads=8
+2019-09-02 10:07:52 INFO main - serverCallbackExecutorThreads=0
+2019-09-02 10:07:52 INFO main - serverSelectorThreads=3
+2019-09-02 10:07:52 INFO main - serverOnewaySemaphoreValue=256
+2019-09-02 10:07:52 INFO main - serverAsyncSemaphoreValue=64
+2019-09-02 10:07:52 INFO main - serverChannelMaxIdleTimeSeconds=120
+2019-09-02 10:07:52 INFO main - serverSocketSndBufSize=65535
+2019-09-02 10:07:52 INFO main - serverSocketRcvBufSize=65535
+2019-09-02 10:07:52 INFO main - serverPooledByteBufAllocatorEnable=true
+2019-09-02 10:07:52 INFO main - useEpollNativeSelector=false
+2019-09-02 10:07:52 INFO main - Server is running in TLS permissive mode
+2019-09-02 10:07:52 INFO main - Tls config file doesn't exist, skip it
+2019-09-02 10:07:52 INFO main - Log the final used tls related configuration
+2019-09-02 10:07:52 INFO main - tls.test.mode.enable = true
+2019-09-02 10:07:52 INFO main - tls.server.need.client.auth = none
+2019-09-02 10:07:52 INFO main - tls.server.keyPath = null
+2019-09-02 10:07:52 INFO main - tls.server.keyPassword = null
+2019-09-02 10:07:52 INFO main - tls.server.certPath = null
+2019-09-02 10:07:52 INFO main - tls.server.authClient = false
+2019-09-02 10:07:52 INFO main - tls.server.trustCertPath = null
+2019-09-02 10:07:52 INFO main - tls.client.keyPath = null
+2019-09-02 10:07:52 INFO main - tls.client.keyPassword = null
+2019-09-02 10:07:52 INFO main - tls.client.certPath = null
+2019-09-02 10:07:52 INFO main - tls.client.authServer = false
+2019-09-02 10:07:52 INFO main - tls.client.trustCertPath = null
+2019-09-02 10:07:52 INFO main - Using OpenSSL provider
+2019-09-02 10:07:53 INFO main - SSLContext created for server
+2019-09-02 10:07:53 INFO main - Try to start service thread:FileWatchService started:false lastThread:null
+2019-09-02 10:07:53 INFO NettyEventExecutor - NettyEventExecutor service started
+2019-09-02 10:07:53 INFO main - The Name Server boot success. serializeType=JSON
+2019-09-02 10:07:53 INFO FileWatchService - FileWatchService service started
+2019-09-02 10:07:54 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.3:42322
+2019-09-02 10:07:54 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.3:42322]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new topic registered, DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]
+2019-09-02 10:07:54 INFO RemotingExecutorThread_1 - new broker registered, 35.36.3.114:10911 HAServer: 172.20.0.3:10912
+2019-09-02 10:08:22 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.3:42322]
+2019-09-02 10:08:22 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.3:42322]
+2019-09-02 10:08:22 INFO NettyEventExecutor - the broker's channel destroyed, 35.36.3.114:10911, clean it's data structure at once
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove brokerAddr[0, 35.36.3.114:10911] from brokerAddrTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove brokerName[broker-a] from brokerAddrTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove brokerName[broker-a], clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove the clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed and no broker in this cluster
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[broker-a] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[TBW102] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[BenchmarkTest] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[DefaultCluster] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:08:22 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:09:10 INFO main - rocketmqHome=/opt/rocketmq-4.5.1
+2019-09-02 10:09:10 INFO main - kvConfigPath=/opt/namesrv/kvConfig.json
+2019-09-02 10:09:10 INFO main - configStorePath=/opt/namesrv/namesrv.properties
+2019-09-02 10:09:10 INFO main - productEnvName=center
+2019-09-02 10:09:10 INFO main - clusterTest=false
+2019-09-02 10:09:10 INFO main - orderMessageEnable=false
+2019-09-02 10:09:10 INFO main - listenPort=9876
+2019-09-02 10:09:10 INFO main - serverWorkerThreads=8
+2019-09-02 10:09:10 INFO main - serverCallbackExecutorThreads=0
+2019-09-02 10:09:10 INFO main - serverSelectorThreads=3
+2019-09-02 10:09:10 INFO main - serverOnewaySemaphoreValue=256
+2019-09-02 10:09:10 INFO main - serverAsyncSemaphoreValue=64
+2019-09-02 10:09:10 INFO main - serverChannelMaxIdleTimeSeconds=120
+2019-09-02 10:09:10 INFO main - serverSocketSndBufSize=65535
+2019-09-02 10:09:10 INFO main - serverSocketRcvBufSize=65535
+2019-09-02 10:09:10 INFO main - serverPooledByteBufAllocatorEnable=true
+2019-09-02 10:09:10 INFO main - useEpollNativeSelector=false
+2019-09-02 10:09:10 INFO main - Server is running in TLS permissive mode
+2019-09-02 10:09:10 INFO main - Tls config file doesn't exist, skip it
+2019-09-02 10:09:10 INFO main - Log the final used tls related configuration
+2019-09-02 10:09:10 INFO main - tls.test.mode.enable = true
+2019-09-02 10:09:10 INFO main - tls.server.need.client.auth = none
+2019-09-02 10:09:10 INFO main - tls.server.keyPath = null
+2019-09-02 10:09:10 INFO main - tls.server.keyPassword = null
+2019-09-02 10:09:10 INFO main - tls.server.certPath = null
+2019-09-02 10:09:10 INFO main - tls.server.authClient = false
+2019-09-02 10:09:10 INFO main - tls.server.trustCertPath = null
+2019-09-02 10:09:10 INFO main - tls.client.keyPath = null
+2019-09-02 10:09:10 INFO main - tls.client.keyPassword = null
+2019-09-02 10:09:10 INFO main - tls.client.certPath = null
+2019-09-02 10:09:10 INFO main - tls.client.authServer = false
+2019-09-02 10:09:10 INFO main - tls.client.trustCertPath = null
+2019-09-02 10:09:10 INFO main - Using OpenSSL provider
+2019-09-02 10:09:11 INFO main - SSLContext created for server
+2019-09-02 10:09:11 INFO main - Try to start service thread:FileWatchService started:false lastThread:null
+2019-09-02 10:09:11 INFO NettyEventExecutor - NettyEventExecutor service started
+2019-09-02 10:09:11 INFO main - The Name Server boot success. serializeType=JSON
+2019-09-02 10:09:11 INFO FileWatchService - FileWatchService service started
+2019-09-02 10:09:12 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.3:42324
+2019-09-02 10:09:12 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.3:42324]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new topic registered, DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]
+2019-09-02 10:09:12 INFO RemotingExecutorThread_1 - new broker registered, 35.36.3.114:10911 HAServer: 172.20.0.3:10912
+2019-09-02 10:10:11 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 10:10:11 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 10:10:12 INFO RemotingExecutorThread_4 - new topic registered, RMQ_SYS_TRANS_HALF_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:11:49 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50244
+2019-09-02 10:11:49 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50244]
+2019-09-02 10:18:14 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50244]
+2019-09-02 10:18:14 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50244]
+2019-09-02 10:18:37 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.3:42324]
+2019-09-02 10:18:37 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.3:42324]
+2019-09-02 10:18:37 INFO NettyEventExecutor - the broker's channel destroyed, 35.36.3.114:10911, clean it's data structure at once
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove brokerAddr[0, 35.36.3.114:10911] from brokerAddrTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove brokerName[broker-a] from brokerAddrTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove brokerName[broker-a], clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove the clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed and no broker in this cluster
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[RMQ_SYS_TRANS_HALF_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[RMQ_SYS_TRANS_HALF_TOPIC] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[broker-a] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[TBW102] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[BenchmarkTest] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[DefaultCluster] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 10:18:37 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 10:19:02 INFO main - rocketmqHome=/opt/rocketmq-4.5.1
+2019-09-02 10:19:02 INFO main - kvConfigPath=/opt/namesrv/kvConfig.json
+2019-09-02 10:19:02 INFO main - configStorePath=/opt/namesrv/namesrv.properties
+2019-09-02 10:19:02 INFO main - productEnvName=center
+2019-09-02 10:19:02 INFO main - clusterTest=false
+2019-09-02 10:19:02 INFO main - orderMessageEnable=false
+2019-09-02 10:19:02 INFO main - listenPort=9876
+2019-09-02 10:19:02 INFO main - serverWorkerThreads=8
+2019-09-02 10:19:02 INFO main - serverCallbackExecutorThreads=0
+2019-09-02 10:19:02 INFO main - serverSelectorThreads=3
+2019-09-02 10:19:02 INFO main - serverOnewaySemaphoreValue=256
+2019-09-02 10:19:02 INFO main - serverAsyncSemaphoreValue=64
+2019-09-02 10:19:02 INFO main - serverChannelMaxIdleTimeSeconds=120
+2019-09-02 10:19:02 INFO main - serverSocketSndBufSize=65535
+2019-09-02 10:19:02 INFO main - serverSocketRcvBufSize=65535
+2019-09-02 10:19:02 INFO main - serverPooledByteBufAllocatorEnable=true
+2019-09-02 10:19:02 INFO main - useEpollNativeSelector=false
+2019-09-02 10:19:02 INFO main - Server is running in TLS permissive mode
+2019-09-02 10:19:02 INFO main - Tls config file doesn't exist, skip it
+2019-09-02 10:19:02 INFO main - Log the final used tls related configuration
+2019-09-02 10:19:02 INFO main - tls.test.mode.enable = true
+2019-09-02 10:19:02 INFO main - tls.server.need.client.auth = none
+2019-09-02 10:19:02 INFO main - tls.server.keyPath = null
+2019-09-02 10:19:02 INFO main - tls.server.keyPassword = null
+2019-09-02 10:19:02 INFO main - tls.server.certPath = null
+2019-09-02 10:19:02 INFO main - tls.server.authClient = false
+2019-09-02 10:19:02 INFO main - tls.server.trustCertPath = null
+2019-09-02 10:19:02 INFO main - tls.client.keyPath = null
+2019-09-02 10:19:02 INFO main - tls.client.keyPassword = null
+2019-09-02 10:19:02 INFO main - tls.client.certPath = null
+2019-09-02 10:19:02 INFO main - tls.client.authServer = false
+2019-09-02 10:19:02 INFO main - tls.client.trustCertPath = null
+2019-09-02 10:19:03 INFO main - Using OpenSSL provider
+2019-09-02 10:19:03 INFO main - SSLContext created for server
+2019-09-02 10:19:03 INFO main - Try to start service thread:FileWatchService started:false lastThread:null
+2019-09-02 10:19:03 INFO NettyEventExecutor - NettyEventExecutor service started
+2019-09-02 10:19:03 INFO main - The Name Server boot success. serializeType=JSON
+2019-09-02 10:19:03 INFO FileWatchService - FileWatchService service started
+2019-09-02 10:19:04 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.3:42352
+2019-09-02 10:19:04 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.3:42352]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, RMQ_SYS_TRANS_HALF_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new topic registered, DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]
+2019-09-02 10:19:04 INFO RemotingExecutorThread_1 - new broker registered, 10.11.3.106:10911 HAServer: 172.20.0.3:10912
+2019-09-02 10:19:34 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50268
+2019-09-02 10:19:34 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50268]
+2019-09-02 10:19:34 INFO RemotingExecutorThread_6 - new topic registered, %RETRY%stock_consumer_group QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]
+2019-09-02 10:20:03 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 10:20:03 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 10:20:29 INFO RemotingExecutorThread_3 - new topic registered, TopicTest QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=6, topicSynFlag=0]
+2019-09-02 10:25:33 WARN NettyServerCodecThread_2 - NETTY SERVER PIPELINE: IDLE exception [172.20.0.1:50268]
+2019-09-02 10:25:33 INFO NettyServerNIOSelector_3_2 - closeChannel: close the connection to remote address[172.20.0.1:50268] result: true
+2019-09-02 10:25:33 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50268]
+2019-09-02 10:25:33 INFO NettyServerCodecThread_2 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50268]
+2019-09-02 10:30:02 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 10:30:02 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 10:34:40 INFO NettyServerCodecThread_3 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50280
+2019-09-02 10:34:40 INFO NettyServerCodecThread_3 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50280]
+2019-09-02 10:38:33 WARN NettyServerCodecThread_3 - NETTY SERVER PIPELINE: IDLE exception [172.20.0.1:50280]
+2019-09-02 10:38:33 INFO NettyServerNIOSelector_3_3 - closeChannel: close the connection to remote address[172.20.0.1:50280] result: true
+2019-09-02 10:38:33 INFO NettyServerCodecThread_3 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50280]
+2019-09-02 10:38:33 INFO NettyServerCodecThread_3 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50280]
+2019-09-02 10:40:02 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 10:40:02 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 10:40:58 INFO NettyServerCodecThread_4 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50284
+2019-09-02 10:40:58 INFO NettyServerCodecThread_4 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50284]
+2019-09-02 10:50:02 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 10:50:02 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 10:51:08 INFO NettyServerCodecThread_4 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50284]
+2019-09-02 10:51:08 INFO NettyServerCodecThread_4 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50284]
+2019-09-02 10:51:19 INFO NettyServerCodecThread_5 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50306
+2019-09-02 10:51:19 INFO NettyServerCodecThread_5 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50306]
+2019-09-02 10:53:19 WARN NettyServerCodecThread_5 - NETTY SERVER PIPELINE: IDLE exception [172.20.0.1:50306]
+2019-09-02 10:53:19 INFO NettyServerNIOSelector_3_2 - closeChannel: close the connection to remote address[172.20.0.1:50306] result: true
+2019-09-02 10:53:19 INFO NettyServerCodecThread_5 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50306]
+2019-09-02 10:53:19 INFO NettyServerCodecThread_5 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50306]
+2019-09-02 10:54:47 INFO NettyServerCodecThread_6 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50314
+2019-09-02 10:54:47 INFO NettyServerCodecThread_6 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50314]
+2019-09-02 10:54:49 INFO NettyServerCodecThread_6 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50314]
+2019-09-02 10:54:49 INFO NettyServerCodecThread_6 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50314]
+2019-09-02 10:55:51 INFO NettyServerCodecThread_7 - NETTY SERVER PIPELINE: channelRegistered 172.20.0.1:50326
+2019-09-02 10:55:51 INFO NettyServerCodecThread_7 - NETTY SERVER PIPELINE: channelActive, the channel[172.20.0.1:50326]
+2019-09-02 11:00:01 INFO NSScheduledThread1 - --------------------------------------------------------
+2019-09-02 11:00:01 INFO NSScheduledThread1 - configTable SIZE: 0
+2019-09-02 11:01:38 INFO NettyServerCodecThread_7 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.1:50326]
+2019-09-02 11:01:38 INFO NettyServerCodecThread_7 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.1:50326]
+2019-09-02 11:03:31 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelInactive, the channel[172.20.0.3:42352]
+2019-09-02 11:03:31 INFO NettyServerCodecThread_1 - NETTY SERVER PIPELINE: channelUnregistered, the channel[172.20.0.3:42352]
+2019-09-02 11:03:31 INFO NettyEventExecutor - the broker's channel destroyed, 10.11.3.106:10911, clean it's data structure at once
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove brokerAddr[0, 10.11.3.106:10911] from brokerAddrTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove brokerName[broker-a] from brokerAddrTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove brokerName[broker-a], clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove the clusterName[DefaultCluster] from clusterAddrTable, because channel destroyed and no broker in this cluster
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[RMQ_SYS_TRANS_HALF_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[RMQ_SYS_TRANS_HALF_TOPIC] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[TopicTest QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[TopicTest] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[%RETRY%stock_consumer_group QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[%RETRY%stock_consumer_group] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[broker-a QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[broker-a] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[SELF_TEST_TOPIC] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[TBW102 QueueData [brokerName=broker-a, readQueueNums=4, writeQueueNums=4, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[TBW102] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[BenchmarkTest QueueData [brokerName=broker-a, readQueueNums=1024, writeQueueNums=1024, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[BenchmarkTest] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[DefaultCluster QueueData [brokerName=broker-a, readQueueNums=16, writeQueueNums=16, perm=7, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[DefaultCluster] all queue, from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT QueueData [brokerName=broker-a, readQueueNums=1, writeQueueNums=1, perm=6, topicSynFlag=0]], from topicQueueTable, because channel destroyed
+2019-09-02 11:03:31 INFO NettyEventExecutor - remove topic[OFFSET_MOVED_EVENT] all queue, from topicQueueTable, because channel destroyed

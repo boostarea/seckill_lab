@@ -17,7 +17,7 @@ services:
         aliases:
           - mysql
     ports:
-      - 3306:33i6
+      - 3306:3306
   rmqnamesrv:
     image: foxiswho/rocketmq:server
     container_name: rmqnamesrv
@@ -61,7 +61,7 @@ services:
         aliases:
           - openresty
     ports:
-      - 80:80
+      - 8080:80
     # volumes:
     #   - /home/Documents/nginx/conf.d:/etc/nginx/conf.d
 networks:

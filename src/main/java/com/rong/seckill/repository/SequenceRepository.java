@@ -1,6 +1,6 @@
 package com.rong.seckill.repository;
 
-import com.rong.seckill.infrastructure.entity.Sequence;
+import com.rong.seckill.repository.entity.Sequence;
 import org.springframework.stereotype.Repository;
 
 @Repository

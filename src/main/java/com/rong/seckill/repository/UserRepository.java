@@ -1,6 +1,6 @@
 package com.rong.seckill.repository;
 
-import com.rong.seckill.infrastructure.entity.User;
+import com.rong.seckill.repository.entity.User;
 import org.springframework.stereotype.Repository;
 
 @Repository
