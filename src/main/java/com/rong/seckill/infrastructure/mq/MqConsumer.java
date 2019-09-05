@@ -51,8 +51,6 @@ public class MqConsumer {
             itemStockRepository.decreaseStock(itemId, amount);
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         });
-
         consumer.start();
-
     }
 }

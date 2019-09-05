@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 public class WebServerConfiguration implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
     @Override
     public void customize(ConfigurableWebServerFactory configurableWebServerFactory) {
-            //使用对应工厂类提供给我们的接口定制化我们的tomcat connector
+
+        //使用对应工厂类提供给我们的接口定制化我们的tomcat connector
         ((TomcatServletWebServerFactory)configurableWebServerFactory).addConnectorCustomizers(new TomcatConnectorCustomizer() {
             @Override
             public void customize(Connector connector) {

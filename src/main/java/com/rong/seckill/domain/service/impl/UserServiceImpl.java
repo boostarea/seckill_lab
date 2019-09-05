@@ -8,6 +8,7 @@ import com.rong.seckill.repository.UserPasswordRepository;
 import com.rong.seckill.repository.UserRepository;
 import com.rong.seckill.repository.entity.User;
 import com.rong.seckill.repository.entity.UserPassword;
+import com.rong.seckill.util.validator.Validator;
 import com.rong.seckill.util.validator.ValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserModel getUserByIdInCache(Integer id) {
         UserModel userModel = (UserModel) redisTemplate.opsForValue().get("user_validate_"+id);
-        if(userModel == null){
+        if(Validator.isNull(userModel)) {
             userModel = this.getUserById(id);
             redisTemplate.opsForValue().set("user_validate_"+id,userModel);
             redisTemplate.expire("user_validate_"+id,10, TimeUnit.MINUTES);

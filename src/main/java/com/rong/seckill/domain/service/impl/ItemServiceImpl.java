@@ -92,19 +92,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemModel getItem(Integer id) throws BusinessException {
         //1. 取本地缓存
-        ItemModel itemModel = (ItemModel) cacheService.getFromCommonCache("item_"+id);
+        ItemModel itemModel = (ItemModel) cacheService.getFromCommonCache("item_" + id);
 
-        if(isNull(itemModel)){
+        if(isNull(itemModel)) {
             //2. Redis内获取
-            itemModel = (ItemModel) redisTemplate.opsForValue().get("item_"+id);
+            itemModel = (ItemModel) redisTemplate.opsForValue().get("item_" + id);
             //3. DB
             if(isNull(itemModel)){
                 itemModel = this.getItemById(id);
-                redisTemplate.opsForValue().set("item_"+id, itemModel);
-                redisTemplate.expire("item_"+id,10, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set("item_" + id, itemModel);
+                redisTemplate.expire("item_" + id,10, TimeUnit.MINUTES);
             }
             //填充本地缓存
-            cacheService.setCommonCache("item_"+id, itemModel);
+            cacheService.setCommonCache("item_" + id, itemModel);
         }
         return itemModel;
     }
@@ -153,7 +153,7 @@ public class ItemServiceImpl implements ItemService {
             redisTemplate.opsForValue().set("promo_item_stock_invalid_" + itemId, "true");
             return true;
         }else{
-            //更新库存失败
+            //更新库存失败，回补库存
             increaseStock(itemId,amount);
             return false;
         }

@@ -110,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId, Integer amount, String stockLogId) throws BusinessException {
-        //1.校验下单状态,下单的商品是否存在，用户是否合法，购买数量是否正确
+        //1.校验下单状态,下单的商品是否存在，用户是否合法，购买数量是否正确 移到令牌创建
         ItemModel itemModel = itemService.getItemByIdInCache(itemId);
         if(itemModel == null){
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"商品信息不存在");
@@ -120,11 +120,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
         //2.落单减库存（redis）
-        boolean result = itemService.decreaseStock(itemId,amount);
+        boolean result = itemService.decreaseStock(itemId, amount);
         if(!result){
             throw new BusinessException(EmBusinessError.STOCK_NOT_ENOUGH);
         }
-
         //3.订单入库
         OrderModel orderModel = new OrderModel();
         orderModel.setUserId(userId);
@@ -137,7 +136,6 @@ public class OrderServiceImpl implements OrderService {
         }
         orderModel.setPromoId(promoId);
         orderModel.setOrderPrice(orderModel.getItemPrice().multiply(new BigDecimal(amount)));
-
         //生成交易流水号,订单号
         orderModel.setId(generateOrderNo());
         Order order = convertFromOrderModel(orderModel);
@@ -188,24 +186,13 @@ public class OrderServiceImpl implements OrderService {
         }
         stringBuilder.append(sequenceStr);
 
-
         //最后2位为分库分表位,暂时写死
         stringBuilder.append("00");
-
         return stringBuilder.toString();
     }
 
     @Override
     public String generateToken(Integer itemId, Integer promoId, UserModel userModel) throws BusinessException {
-        //通过verifycode验证验证码的有效性
-        // String redisVerifyCode = (String) redisTemplate.opsForValue().get("verify_code_" + userModel.getId());
-        // if(StringUtils.isEmpty(redisVerifyCode)){
-        //     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法");
-        // }
-        // if(!redisVerifyCode.equalsIgnoreCase(verifyCode)){
-        //     throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"请求非法，验证码错误");
-        // }
-
         //获取秒杀访问令牌
         String promoToken = promoService.generateSecondKillToken(promoId, itemId, userModel.getId());
         if(promoToken == null){

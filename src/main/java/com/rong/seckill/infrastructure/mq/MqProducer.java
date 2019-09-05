@@ -2,6 +2,7 @@ package com.rong.seckill.infrastructure.mq;
 
 import com.alibaba.fastjson.JSON;
 import com.rong.seckill.domain.service.OrderService;
+import com.rong.seckill.infrastructure.enums.StockLogStatus;
 import com.rong.seckill.repository.entity.StockLog;
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.repository.StockLogRepository;
@@ -41,7 +42,6 @@ public class MqProducer {
     @Value("${mq.topicname}")
     private String topicName;
 
-
     @Autowired
     private OrderService orderService;
 
@@ -51,10 +51,6 @@ public class MqProducer {
     @PostConstruct
     public void init() throws MQClientException {
         // producer的group无任何意义
-        producer = new DefaultMQProducer("producer_group");
-        producer.setNamesrvAddr(nameAddr);
-        producer.start();
-
         transactionMQProducer = new TransactionMQProducer("transaction_producer_group");
         transactionMQProducer.setNamesrvAddr(nameAddr);
         transactionMQProducer.start();
@@ -62,19 +58,20 @@ public class MqProducer {
         transactionMQProducer.setTransactionListener(new TransactionListener() {
             @Override
             public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-                //真正要做的事  创建订单，事务型消息驱动下单
+                //创建订单，事务型消息驱动下单
                 Integer itemId = (Integer) ((Map)arg).get("itemId");
                 Integer promoId = (Integer) ((Map)arg).get("promoId");
                 Integer userId = (Integer) ((Map)arg).get("userId");
                 Integer amount = (Integer) ((Map)arg).get("amount");
                 String stockLogId = (String) ((Map)arg).get("stockLogId");
+
                 try {
                     orderService.createOrder(userId,itemId,promoId,amount,stockLogId);
                 } catch (BusinessException e) {
                     e.printStackTrace();
                     //设置对应的stockLog为回滚状态
                     StockLog stockLog = stockLogRepository.getOne(stockLogId);
-                    stockLog.setStatus(3);
+                    stockLog.setStatus(StockLogStatus.ROLLBACK.getCode());
                     stockLogRepository.save(stockLog);
                     return LocalTransactionState.ROLLBACK_MESSAGE;
                 }
@@ -86,19 +83,20 @@ public class MqProducer {
             public LocalTransactionState checkLocalTransaction(MessageExt msg) {
                 //根据是否扣减库存成功，来判断要返回COMMIT,ROLLBACK还是继续UNKNOWN
                 String jsonString  = new String(msg.getBody());
-                Map<String,Object>map = JSON.parseObject(jsonString, Map.class);
+                Map<String,Object> map = JSON.parseObject(jsonString, Map.class);
                 Integer itemId = (Integer) map.get("itemId");
                 Integer amount = (Integer) map.get("amount");
-                //库存操作流水，
+                //库存操作流水
                 String stockLogId = (String) map.get("stockLogId");
                 StockLog stockLog = stockLogRepository.getOne(stockLogId);
+
                 if(stockLog == null){
                     // 不会无脑重试，减频度重试，7天后删除
                     return LocalTransactionState.UNKNOW;
                 }
-                if(stockLog.getStatus().intValue() == 2){
+                if(StockLogStatus.SUCCESS.getCode().equals(stockLog.getStatus())) {
                     return LocalTransactionState.COMMIT_MESSAGE;
-                }else if(stockLog.getStatus().intValue() == 1){
+                }else if (StockLogStatus.INIT.getCode().equals(stockLog.getStatus())) {
                     return LocalTransactionState.UNKNOW;
                 }
                 return LocalTransactionState.ROLLBACK_MESSAGE;
@@ -108,17 +106,18 @@ public class MqProducer {
 
     //事务型同步库存扣减消息
     public boolean transactionAsyncReduceStock(Integer userId,Integer itemId,Integer promoId,Integer amount,String stockLogId) {
-        Map<String,Object> bodyMap = new HashMap<>();
-        bodyMap.put("itemId",itemId);
-        bodyMap.put("amount",amount);
-        bodyMap.put("stockLogId",stockLogId);
-
-        Map<String,Object> argsMap = new HashMap<>();
-        argsMap.put("itemId",itemId);
-        argsMap.put("amount",amount);
-        argsMap.put("userId",userId);
-        argsMap.put("promoId",promoId);
-        argsMap.put("stockLogId",stockLogId);
+        Map<String,Object> bodyMap = new HashMap() {{
+            put("itemId",itemId);
+            put("amount",amount);
+            put("stockLogId",stockLogId);
+        }};
+        Map<String,Object> argsMap = new HashMap() {{
+            put("itemId",itemId);
+            put("amount",amount);
+            put("userId",userId);
+            put("promoId",promoId);
+            put("stockLogId",stockLogId);
+        }};
 
         Message message = new Message(topicName,"increase", JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));
         TransactionSendResult sendResult;
@@ -129,15 +128,16 @@ public class MqProducer {
             e.printStackTrace();
             return false;
         }
-
         return sendResult.getLocalTransactionState() == LocalTransactionState.COMMIT_MESSAGE;
     }
 
+
     //同步库存扣减消息
     public boolean asyncReduceStock(Integer itemId,Integer amount)  {
-        Map<String,Object> bodyMap = new HashMap<>();
-        bodyMap.put("itemId",itemId);
-        bodyMap.put("amount",amount);
+        Map<String,Object> bodyMap = new HashMap() {{
+            put("itemId",itemId);
+            put("amount",amount);
+        }};
 
         // 野生投放
         Message message = new Message(topicName,"increase", JSON.toJSON(bodyMap).toString().getBytes(Charset.forName("UTF-8")));

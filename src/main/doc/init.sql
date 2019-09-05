@@ -47,7 +47,7 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
-INSERT INTO `item` VALUES (6,'iphone99',800,'最好用的苹果手机',139,'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3974550569,4161544558&fm=27&gp=0.jpg'),(7,'iphone8',600,'第二好用的苹果手机',88,'http://img5.imgtn.bdimg.com/it/u=2067197169,357050228&fm=26&gp=0.jpg');
+INSERT INTO `item` VALUES (6,'iphone99',800,'apple',139,'https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3974550569,4161544558&fm=27&gp=0.jpg'),(7,'iphone88',600,'apple',88,'http://img5.imgtn.bdimg.com/it/u=2067197169,357050228&fm=26&gp=0.jpg');
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +130,7 @@ CREATE TABLE `promo` (
 
 LOCK TABLES `promo` WRITE;
 /*!40000 ALTER TABLE `promo` DISABLE KEYS */;
-INSERT INTO `promo` VALUES (1,'iphone4抢购活动','2018-01-19 00:04:30',6,100,'2019-12-31 00:00:00');
+INSERT INTO `promo` VALUES (1,'iphone抢购活动','2018-01-19 00:04:30',6,100,'2019-12-31 00:00:00');
 /*!40000 ALTER TABLE `promo` ENABLE KEYS */;
 UNLOCK TABLES;
 

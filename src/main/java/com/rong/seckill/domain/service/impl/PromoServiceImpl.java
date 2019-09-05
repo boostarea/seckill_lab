@@ -64,7 +64,7 @@ public class PromoServiceImpl implements PromoService {
 
         //库存同步到redis
         redisTemplate.opsForValue().set("promo_item_stock_"+itemModel.getId(), itemModel.getStock());
-        //大闸的限制到redis内
+        //大闸的限制到redis内 todo 基数应该放到配置中心
         redisTemplate.opsForValue().set("promo_door_count_"+promoId, itemModel.getStock() * 5);
     }
 
@@ -74,17 +74,17 @@ public class PromoServiceImpl implements PromoService {
         if(redisTemplate.hasKey("promo_item_stock_invalid_" + itemId)){
             return null;
         }
+
+        //活动是否正在进行
         Promo promo = promoRepository.getOne(promoId);
         if (isNull(promo)) {
             return null;
         }
         PromoModel promoModel = getPromoModel(promo);
-
-        //活动是否正在进行
         if(!PromoStatus.DOING.getCode().equals(promoModel.getStatus())){
             return null;
         }
-        //商品是否存在
+        //商品是否存在 移到cache
         ItemModel itemModel = itemService.getItemByIdInCache(itemId);
         if(isNull(itemModel)){
             return null;
@@ -95,7 +95,7 @@ public class PromoServiceImpl implements PromoService {
             return null;
         }
         //是否通过秒杀大闸
-        long result = redisTemplate.opsForValue().increment("promo_door_count_"+promoId,-1);
+        long result = redisTemplate.opsForValue().increment("promo_door_count_" + promoId,-1);
         if(result < 0){
             return null;
         }
