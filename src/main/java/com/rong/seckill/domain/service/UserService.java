@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * @Author chenrong
- * @Date 2019-08-28 15:27
+ * @Date 2019-08-28 20:27
  **/
 public interface UserService {
     //通过用户ID获取用户对象的方法

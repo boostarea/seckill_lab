@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * @Author chenrong
- * @Date 2019-08-28 15:27
+ * @Date 2019-08-28 20:27
  **/
 @RestController
 @RequestMapping("user")
@@ -32,6 +32,5 @@ public class UserController  extends BaseController{
         String uuidToken = userService.login(telphone, password);
         return CommonReturnType.create(uuidToken);
     }
-
 
 }

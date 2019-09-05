@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 /**
  * @Author chenrong
- * @Date 2019-08-28 15:27
+ * @Date 2019-08-28 20:27
  **/
 @Data
 public class PromoModel implements Serializable {

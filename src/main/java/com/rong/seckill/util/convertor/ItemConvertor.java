@@ -13,31 +13,31 @@ import java.util.Optional;
 /**
  * @Description TODO
  * @Author chenrong
- * @Date 2019-08-14 10:28
+ * @Date 2019-08-27 21:00
  **/
 public class ItemConvertor {
 
-    public static ItemVO convertVOFromModel(ItemModel itemModel){
-        if(!Optional.ofNullable(itemModel).isPresent()){
+    public static ItemVO convertVOFromModel(ItemModel itemModel) {
+        if (!Optional.ofNullable(itemModel).isPresent()) {
             return null;
         }
         ItemVO itemVO = new ItemVO();
         BeanUtils.copyProperties(itemModel,itemVO);
 
         Optional<PromoModel> promoOpt = Optional.ofNullable(itemModel.getPromoModel());
-        if(promoOpt.isPresent()){
+        if (promoOpt.isPresent()) {
             //有正在进行或即将进行的秒杀活动
             itemVO.setPromoStatus(itemModel.getPromoModel().getStatus());
             itemVO.setPromoId(itemModel.getPromoModel().getId());
             itemVO.setStartDate(itemModel.getPromoModel().getStartDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));
             itemVO.setPromoPrice(itemModel.getPromoModel().getPromoItemPrice());
-        }else{
+        } else {
             itemVO.setPromoStatus(0);
         }
         return itemVO;
     }
 
-    public static Item convertItemDOFromItemModel(ItemModel itemModel){
+    public static Item convertItemDOFromItemModel(ItemModel itemModel) {
         if (!Optional.ofNullable(itemModel).isPresent()) {
             return null;
         }
@@ -47,7 +47,7 @@ public class ItemConvertor {
         return item;
     }
 
-    public static ItemStock convertItemStockDOFromItemModel(ItemModel itemModel){
+    public static ItemStock convertItemStockDOFromItemModel(ItemModel itemModel) {
         if (!Optional.ofNullable(itemModel).isPresent()) {
             return null;
         }

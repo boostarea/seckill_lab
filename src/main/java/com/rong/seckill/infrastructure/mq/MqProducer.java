@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * @Author chenrong
- * @Date 2019-08-28 15:27
+ * @Date 2019-08-28 20:27
  **/
 @Component
 public class MqProducer {

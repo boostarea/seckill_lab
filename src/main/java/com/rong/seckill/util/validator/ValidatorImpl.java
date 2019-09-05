@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * @Author chenrong
- * @Date 2019-08-28 15:27
+ * @Date 2019-08-28 20:27
  **/
 @Component
 public class ValidatorImpl implements InitializingBean{
@@ -22,7 +22,6 @@ public class ValidatorImpl implements InitializingBean{
         final ValidationResult result = new ValidationResult();
         Set<ConstraintViolation<Object>> constraintViolationSet = validator.validate(bean);
         if(constraintViolationSet.size() > 0){
-            //有错误
             result.setHasErrors(true);
             constraintViolationSet.forEach(constraintViolation->{
                 String errMsg = constraintViolation.getMessage();
