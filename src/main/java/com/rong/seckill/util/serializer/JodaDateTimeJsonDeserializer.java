@@ -19,7 +19,6 @@ public class JodaDateTimeJsonDeserializer extends JsonDeserializer<DateTime> {
     public DateTime deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         String dateString =jsonParser.readValueAs(String.class);
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-
         return DateTime.parse(dateString,formatter);
     }
 }

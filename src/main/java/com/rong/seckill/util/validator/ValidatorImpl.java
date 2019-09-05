@@ -33,7 +33,6 @@ public class ValidatorImpl implements InitializingBean{
         return result;
     }
 
-
     @Override
     public void afterPropertiesSet() throws Exception {
         //将hibernate validator通过工厂的初始化方式使其实例化

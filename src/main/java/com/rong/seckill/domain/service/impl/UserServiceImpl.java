@@ -2,22 +2,24 @@ package com.rong.seckill.domain.service.impl;
 
 import com.rong.seckill.domain.model.UserModel;
 import com.rong.seckill.domain.service.UserService;
-import com.rong.seckill.repository.entity.User;
-import com.rong.seckill.repository.entity.UserPassword;
 import com.rong.seckill.infrastructure.response.error.BusinessException;
 import com.rong.seckill.infrastructure.response.error.EmBusinessError;
 import com.rong.seckill.repository.UserPasswordRepository;
 import com.rong.seckill.repository.UserRepository;
-import com.rong.seckill.util.validator.ValidationResult;
+import com.rong.seckill.repository.entity.User;
+import com.rong.seckill.repository.entity.UserPassword;
 import com.rong.seckill.util.validator.ValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import sun.misc.BASE64Encoder;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,37 +67,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
-    public void register(UserModel userModel) throws BusinessException {
-        if(userModel == null){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
-        }
-        ValidationResult result =  validator.validate(userModel);
-        if(result.isHasErrors()){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,result.getErrMsg());
-        }
-
-
-
-        //实现model->dataobject方法
-        User user = convertFromModel(userModel);
-        try{
-            userRepository.save(user);
-        }catch(DuplicateKeyException ex){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"手机号已重复注册");
-        }
-
-
-
-        userModel.setId(user.getId());
-
-        UserPassword userPassword = convertPasswordFromModel(userModel);
-        userPasswordRepository.save(userPassword);
-
-        return;
-    }
-
-    @Override
     public UserModel validateLogin(String telphone, String encrptPassword) throws BusinessException {
         //通过用户的手机获取用户信息
         User user = userRepository.findByTelphone(telphone);
@@ -112,25 +83,32 @@ public class UserServiceImpl implements UserService {
         return userModel;
     }
 
-
-    private UserPassword convertPasswordFromModel(UserModel userModel){
-        if(userModel == null){
-            return null;
+    @Override
+    public String login(String telphone, String password) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        //入参校验
+        if(org.apache.commons.lang3.StringUtils.isEmpty(telphone)||
+                org.springframework.util.StringUtils.isEmpty(password)){
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        UserPassword userPassword = new UserPassword();
-        userPassword.setEncrptPassword(userModel.getEncrptPassword());
-        userPassword.setUserId(userModel.getId());
-        return userPassword;
-    }
-    private User convertFromModel(UserModel userModel){
-        if(userModel == null){
-            return null;
-        }
-        User userDO = new User();
-        BeanUtils.copyProperties(userModel,userDO);
 
-        return userDO;
+        //用户登陆服务,用来校验用户登陆是否合法
+        UserModel userModel = validateLogin(telphone, EncodeByMd5(password));
+        //将登陆凭证加入到用户登陆成功的session内
+
+        //修改成若用户登录验证成功后将对应的登录信息和登录凭证一起存入redis中
+
+        //生成登录凭证token，UUID
+        String uuidToken = UUID.randomUUID().toString();
+        uuidToken = uuidToken.replace("-","");
+
+        uuidToken = "2a605b86b7d9423e80c79c47df866fb1";
+        //建议token和用户登陆态之间的联系
+        redisTemplate.opsForValue().set(uuidToken,userModel);
+        redisTemplate.expire(uuidToken,1, TimeUnit.HOURS);
+
+        return uuidToken;
     }
+
     private UserModel convertFromDataObject(User userDO, UserPassword userPasswordDO){
         if(userDO == null){
             return null;
@@ -143,5 +121,14 @@ public class UserServiceImpl implements UserService {
         }
 
         return userModel;
+    }
+
+    private String EncodeByMd5(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        //确定计算方法
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        BASE64Encoder base64en = new BASE64Encoder();
+        //加密字符串
+        String newstr = base64en.encode(md5.digest(str.getBytes("utf-8")));
+        return newstr;
     }
 }

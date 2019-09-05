@@ -26,5 +26,4 @@ public class CommonReturnType {
         type.setData(result);
         return type;
     }
-
 }

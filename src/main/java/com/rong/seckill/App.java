@@ -14,7 +14,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
  **/
 @SpringBootApplication(scanBasePackages = {"com.rong.seckill"})
 @EnableJpaRepositories(basePackages = "com.rong.seckill.repository")
-
 public class App {
 
     public static void main( String[] args ) {

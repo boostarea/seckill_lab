@@ -11,7 +11,6 @@ import java.math.BigDecimal;
  **/
 @Data
 public class OrderModel {
-    //2018102100012828
     private String id;
     //购买的用户id
     private Integer userId;
@@ -25,5 +24,4 @@ public class OrderModel {
     private Integer amount;
     //购买金额,若promoId非空，则表示秒杀商品价格
     private BigDecimal orderPrice;
-
 }

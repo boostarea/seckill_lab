@@ -28,10 +28,8 @@ public enum EmBusinessError implements CommonError {
         this.errMsg = errMsg;
     }
 
-
     private int errCode;
     private String errMsg;
-
 
     @Override
     public int getErrCode() {

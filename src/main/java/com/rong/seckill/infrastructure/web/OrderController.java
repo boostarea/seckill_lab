@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
  * @Author chenrong
  * @Date 2019-08-28 15:27
  **/
-@AllArgsConstructor
 @RestController
+@AllArgsConstructor
 @RequestMapping("order")
 @CrossOrigin(origins = {"*"},allowCredentials = "true")
 public class OrderController extends BaseController {
@@ -78,3 +78,4 @@ public class OrderController extends BaseController {
         return userModel;
     }
 }
+
